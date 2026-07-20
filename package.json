@@ -1,0 +1,26 @@
+{
+  "name": "lenses",
+  "private": true,
+  "license": "MIT",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build:contest": "bun run --cwd packages/extension build:contest",
+    "build:production": "bun run --cwd packages/extension build:production",
+    "check:contest": "bun run --cwd packages/extension check:contest",
+    "check:production": "bun run --cwd packages/extension check:production",
+    "dev": "cd packages/backend && bunx convex dev",
+    "slides:server": "bun scripts/slides-export-server.ts",
+    "test": "vitest",
+    "typecheck": "bun run typecheck:shared && bun run typecheck:backend && bun run typecheck:extension",
+    "typecheck:shared": "tsc -p packages/shared/tsconfig.json --noEmit",
+    "typecheck:backend": "tsc -p packages/backend/tsconfig.json --noEmit",
+    "typecheck:extension": "tsc -p packages/extension/tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "convex": "^1.42.0"
+  }
+}

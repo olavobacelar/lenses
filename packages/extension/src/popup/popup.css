@@ -1,0 +1,934 @@
+/* ============================================================
+   Design tokens — the shared neutral system used across
+   popup, sidepanel, and options. Neutral charcoal surfaces, true
+   greys, and a single blue accent give the family one voice.
+   The lens identity dots (claim/source) stay
+   chromatic — they're informational, not chrome.
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  --ink: #0d0d0d;         /* near-black primary text */
+  --ink-soft: #2a2a2a;
+  --text: #424242;
+  --muted: #737373;
+  --faint: #959595;
+  --hush: #b6b6b6;
+
+  --line: #e6e6e6;        /* neutral hairline */
+  --line-soft: #f2f2f2;   /* internal dividers */
+  --line-faint: #f8f8f8;  /* hover wash */
+
+  --paper: #ffffff;
+  --paper-soft: #ffffff;  /* body bg — clean white */
+  --paper-warm: #fbfbfb;
+
+  --accent: #2f6df6;
+  --accent-strong: #2a62dd;   /* primary blue */
+  --accent-stronger: #2657c5;
+  --accent-rule: #b0c8fc;
+  --accent-tint: #eaf0fe;
+  --accent-ring: rgba(47, 109, 246, 0.24);
+
+  --danger: #f85149;
+  --danger-strong: #d22b22;
+  --danger-tint: #fdecea;
+  --danger-border: #f8c9c5;
+
+  --radius: 10px;
+  --radius-xs: var(--radius);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-pill: 999px;
+  --radius-round: 50%;
+  --radius-card: var(--radius-lg);
+  --radius-btn: var(--radius-md);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Neutrals that need a dark counterpart. Tokenized here so the
+     dark override below is the single place that flips them. */
+  --switch-track: #e3e3e3;
+  --switch-thumb: #ffffff;
+  --disabled-bg: #efefef;
+  --icon-hover-border: #e7e7e7;
+}
+
+/* Dark theme — resolved in JS (see lib/theme.ts) and stamped as
+   data-theme="dark" on <html>. Light remains the default in :root above. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: #ececec;
+  --ink-soft: #d3d3d3;
+  --text: #b6b6b6;
+  --muted: #8c8c8d;
+  --faint: #6a6a6c;
+  --hush: #4f4f51;
+
+  --line: #424243;
+  --line-soft: #323234;
+  --line-faint: #262628;
+
+  --paper: #323234;
+  --paper-soft: #1b1b1d;
+  --paper-warm: #2d2d2f;
+
+  --accent: #7aa2f7;
+  --accent-strong: #8aadf8;
+  --accent-stronger: #97b6f9;
+  --accent-rule: #46587f;
+  --accent-tint: #2a3140;
+  --accent-ring: rgba(122, 162, 247, 0.32);
+
+  --danger: #f85149;
+  --danger-strong: #ff8985;
+  --danger-tint: #3a1c1a;
+  --danger-border: #5e2b28;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  --switch-track: #525253;
+  --switch-thumb: #ececec;
+  --disabled-bg: #2a2a2c;
+  --icon-hover-border: #525253;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  font-family: var(--font-system);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper-soft);
+}
+
+.container {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------------------------------------------------------------
+   Site heading
+   --------------------------------------------------------------- */
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.site-heading {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+}
+header h1 {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.site-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.site-domain {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+/* A domain-only header has no title line, so the domain is the headline. */
+.site-domain:only-child {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Header utilities — open source panel, clear highlights, settings — sit as a
+   row of bare icons (no button boxes). A faint wash on hover is the only
+   affordance, so nothing reads as boxed or selected at rest. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--muted);
+}
+.icon-btn:hover:not(:disabled) {
+  background: var(--line-faint);
+  color: var(--ink);
+}
+.icon-btn:disabled {
+  color: var(--faint);
+  cursor: not-allowed;
+}
+.icon-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* ---------------------------------------------------------------
+   Section eyebrows — quiet micro headings. No trailing rule: the
+   whitespace between sections does the separating, so the panel
+   reads calmer. Same tracking + uppercase as the chatbox eyebrow,
+   muted so they recede behind their content.
+   --------------------------------------------------------------- */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 8px;
+}
+
+/* ---------------------------------------------------------------
+   Lens picker — compact pill chips with a per-lens identity dot, the
+   same form the side panel's `.bay-chip` uses. The control row holds a
+   small "Highlight" run pill at the far right (mirrors `.bay-run`). A
+   checked chip is signalled by the accent outline and
+   tint alone — no separate checkbox glyph.
+   --------------------------------------------------------------- */
+.lens-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.picker-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* The run pill anchors the right so the selected lenses remain the main scan
+   target on the left. */
+.picker-bar .run-pill {
+  margin-left: auto;
+}
+.run-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 13px;
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-pill);
+  background: var(--accent-strong);
+  color: white;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+.run-pill .run-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-round);
+  background: currentColor;
+  opacity: 0.85;
+}
+.run-pill:hover:not(:disabled) {
+  background: var(--accent-stronger);
+  border-color: var(--accent-stronger);
+}
+.run-pill:disabled {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--line);
+  cursor: not-allowed;
+}
+.run-pill:disabled .run-dot {
+  opacity: 0.4;
+}
+.run-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.lens-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lens-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-pill);
+  background: var(--paper-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease;
+}
+.lens-chip:hover {
+  border-color: var(--icon-hover-border);
+  color: var(--ink);
+}
+.lens-chip[data-state="checked"] {
+  /* A single accent hairline — no doubled inset ring — keeps selection subtle,
+     matching the side rail's restraint. */
+  border-color: var(--accent-strong);
+  background: var(--accent-tint);
+  color: var(--ink);
+}
+.lens-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+/* Computing animation — a selected pill breathes while its lens runs on the
+   page, then eases back as it settles. Same rhythm as the page dock's
+   `.is-computing` state, so a running lens looks the same on every surface.
+   Placed after the checked rule so it wins on equal specificity. */
+.lens-chip.is-computing {
+  border-color: var(--accent-strong);
+  color: var(--ink);
+  animation: lenses-popup-pill-breathe 1s ease-in-out infinite;
+}
+.lens-chip.is-settling {
+  animation: none;
+  transition: background-color 0.42s ease, border-color 0.42s ease,
+    box-shadow 0.42s ease, color 0.18s ease;
+}
+@keyframes lenses-popup-pill-breathe {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--accent-strong) 42%, transparent);
+    background-color: color-mix(in srgb, var(--accent-strong) 6%, var(--paper-soft));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-strong) 12%, transparent);
+  }
+  50% {
+    border-color: var(--accent-strong);
+    background-color: color-mix(in srgb, var(--accent-strong) 30%, var(--paper-soft));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-strong) 45%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lens-chip.is-computing {
+    animation-duration: 2.4s;
+  }
+}
+.lens-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-round);
+  background: var(--faint);
+}
+.lens-dot[data-lens="claim-extractor"]    { background: #4f8df9; }
+.lens-dot[data-lens="source-tracer"]      { background: #059669; }
+.lens-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Pin affordance on each lens chip — the same control the page rail carries. A
+   pin means "auto-run this lens on the current domain". Hidden until the chip is
+   hovered (or always shown when pinned), reserving its slot so hover doesn't
+   shift the row. The click is swallowed in JS so it never toggles selection. */
+.lens-pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 1px;
+  margin-right: -3px;
+  border-radius: var(--radius-round);
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease, background-color 0.12s ease;
+}
+.lens-pin svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+.lens-chip:hover .lens-pin,
+.lens-pin:focus-visible,
+.lens-pin.is-pinned {
+  opacity: 1;
+}
+.lens-pin:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.lens-pin.is-pinned {
+  color: var(--accent-strong);
+}
+.lens-pin:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 1px;
+}
+
+/* ---------------------------------------------------------------
+   Composer — the side panel's `.composer2`: one rounded field with a
+   bottom bar holding a mode pill (Lens / Ask) on the left and a round
+   send button on the right. The mode pill only switches modes; the send
+   button fires the query (Enter submits too).
+   --------------------------------------------------------------- */
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.composer .section-label {
+  margin: 0;
+}
+.composer2 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  padding: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.composer2:focus-within {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.composer2 .ta2 {
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 2px 4px;
+  min-height: 38px;
+  max-height: 140px;
+}
+.composer2 .ta2::placeholder {
+  color: var(--faint);
+}
+.c2-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+.c2-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 27px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line-soft);
+  background: var(--paper-soft);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.c2-mode:hover {
+  border-color: var(--icon-hover-border);
+}
+.c2-mode .mdot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-round);
+  background: var(--accent-strong);
+}
+.c2-mode .mchev {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.c2-mode[aria-expanded="true"] .mchev {
+  transform: rotate(180deg);
+}
+.c2-spacer {
+  flex: 1;
+}
+.c2-send {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-round);
+  border: none;
+  background: var(--accent-strong);
+  color: white;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+.c2-send svg {
+  width: 15px;
+  height: 15px;
+}
+.c2-send:hover:not(:disabled) {
+  background: var(--accent-stronger);
+}
+.c2-send:disabled {
+  background: var(--disabled-bg);
+  color: var(--faint);
+  cursor: not-allowed;
+}
+
+/* Mode menu — small popover anchored above the mode pill. */
+.c2-menu {
+  z-index: 20;
+  min-width: 210px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.c2-menu[hidden] {
+  display: none;
+}
+.c2-menu-item {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  column-gap: 8px;
+  align-items: start;
+  padding: 7px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.c2-menu-item:hover,
+.c2-menu-item:focus-visible,
+.c2-menu-item[data-highlighted] {
+  background: var(--line-faint);
+  outline: none;
+}
+.c2-menu-check {
+  color: transparent;
+  display: grid;
+  place-items: center;
+  min-height: 16px;
+}
+.c2-menu-item.is-active .c2-menu-check {
+  color: var(--accent-strong);
+}
+.c2-menu-check svg {
+  display: block;
+}
+.c2-menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.c2-menu-label {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ink);
+}
+.c2-menu-item.is-active .c2-menu-label {
+  color: var(--accent-strong);
+}
+.c2-menu-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------
+   Toggle row — slimmer pill, indigo-on solid (no gradient)
+   --------------------------------------------------------------- */
+.auto-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 0;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+.toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.toggle-switch {
+  appearance: none;
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-items: start;
+  width: 30px;
+  height: 18px;
+  background: var(--switch-track);
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 0;
+  transition: background-color 0.18s ease;
+  flex-shrink: 0;
+}
+.toggle-switch-thumb {
+  display: block;
+  width: 15px;
+  height: 15px;
+  background: var(--switch-thumb);
+  border-radius: var(--radius-round);
+  /* A 1.5px horizontal channel so the thumb reads as seated in the track.
+     The track's grid layout owns vertical centering; the transform only moves
+     the thumb sideways. */
+  transform: translateX(1.5px);
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: var(--shadow-soft);
+}
+.toggle-switch[data-state="checked"] {
+  background: var(--accent-strong);
+}
+.toggle-switch[data-state="checked"] .toggle-switch-thumb {
+  transform: translateX(13.5px);
+}
+.toggle-switch:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
+}
+
+.unsupported-page {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  padding: 20px 8px;
+  text-align: center;
+}
+
+.unsupported-page > div {
+  max-width: 248px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.unsupported-page-label {
+  max-width: 100%;
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.unsupported-page-message {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------------
+   Button base — shared by the icon buttons, run pill, send, and chips
+   --------------------------------------------------------------- */
+button {
+  appearance: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-btn);
+  transition: background-color 0.12s ease, color 0.12s ease,
+    border-color 0.12s ease, box-shadow 0.12s ease;
+}
+button:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+
+/* ---------------------------------------------------------------
+   Status pill — a single restrained line, not an attention banner.
+   The dot pulses to communicate activity; the spinner is gone
+   (the trigger panel uses a static colored dot for the same role,
+   so we stay consistent at the family level).
+   --------------------------------------------------------------- */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-btn);
+  font-size: 12px;
+  color: var(--text);
+}
+.status .spinner {
+  width: 6px;
+  height: 6px;
+  border: 0;
+  border-radius: var(--radius-round);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  animation: popup-status-pulse 1.4s ease-in-out infinite;
+}
+.status.error {
+  background: var(--danger-tint);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+.status.error .spinner {
+  background: var(--danger);
+  box-shadow: none;
+  animation: none;
+}
+@keyframes popup-status-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.utility-link {
+  width: 100%;
+  height: auto;
+  padding: 8px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-btn);
+  background: var(--paper);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+.utility-link:hover {
+  background: var(--line-faint);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+/* INTERNAL_TOOLS_START */
+
+/* ---------------------------------------------------------------
+   Debug — same eyebrow + soft outlined card pattern
+   --------------------------------------------------------------- */
+.debug-panel {
+  padding: 0;
+}
+.debug-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
+}
+.debug-controls .toggle-label {
+  font-size: 12px;
+}
+.debug-view-links {
+  display: flex;
+}
+
+.test-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
+  background: var(--paper-warm);
+}
+.test-settings-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.test-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.test-field-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+#test-source-max-citations {
+  width: 64px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+#test-source-max-citations:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+/* Tertiary action — small outlined link-button for internal utilities. */
+.debug-link,
+.debug-action {
+  width: 100%;
+  height: auto;
+  padding: 8px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-btn);
+  background: var(--paper);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+.debug-link:hover {
+  background: var(--line-faint);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.debug-action {
+  color: var(--danger);
+}
+.debug-action:hover {
+  background: var(--danger-tint);
+  color: var(--danger-strong);
+  border-color: var(--danger-border);
+}
+
+.fixture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fixture-item {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-btn);
+  background: var(--paper);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fixture-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.fixture-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--faint);
+  word-break: break-all;
+}
+.fixture-actions {
+  display: flex;
+  gap: 4px;
+}
+.fixture-action-btn {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: var(--paper-warm);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  letter-spacing: 0.01em;
+}
+.fixture-action-btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+/* INTERNAL_TOOLS_END */
+
+/* ---------------------------------------------------------------
+   Connection footer
+   --------------------------------------------------------------- */
+footer {
+  margin-top: 2px;
+}
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--faint);
+}
+.connection .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-round);
+  background: var(--hush);
+}
+.connection.connected .dot {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+}
+.connection.disconnected .dot {
+  background: #ef4444;
+}

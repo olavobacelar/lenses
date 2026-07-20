@@ -1,0 +1,188 @@
+.lenses-selection-trigger {
+  --lenses-selection-ink: #0d0d0d;
+  --lenses-selection-text: #424242;
+  --lenses-selection-muted: #737373;
+  --lenses-selection-line: #e6e6e6;
+  --lenses-selection-line-soft: #f2f2f2;
+  --lenses-selection-paper: #ffffff;
+  --lenses-selection-paper-soft: #ffffff;
+  --lenses-selection-paper-warm: #fbfbfb;
+  --lenses-selection-accent: #2f6df6;
+  --lenses-selection-accent-soft: #eaf0fe;
+  --lenses-selection-accent-ring: rgba(47, 109, 246, 0.18);
+  --lenses-selection-shadow: rgba(0, 0, 0, 0.13);
+  width: min(232px, calc(100vw - 16px));
+  box-sizing: border-box;
+  border: 1px solid var(--lenses-selection-line);
+  background: var(--lenses-selection-paper);
+  color: var(--lenses-selection-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 5px;
+  border-radius: var(--lenses-radius-lg);
+  box-shadow: 0 12px 34px var(--lenses-selection-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: lenses-selection-trigger-in 0.12s ease-out;
+  color-scheme: light;
+}
+
+.lenses-selection-trigger-action {
+  appearance: none;
+  width: 100%;
+  min-height: 34px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-md);
+  background: transparent;
+  color: var(--lenses-selection-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.lenses-selection-trigger-action:hover {
+  border-color: var(--lenses-selection-line-soft);
+  background: var(--lenses-selection-paper-soft);
+}
+
+.lenses-selection-trigger-action:active {
+  background: var(--lenses-selection-paper-warm);
+}
+
+.lenses-selection-trigger-action:disabled {
+  cursor: wait;
+  opacity: 0.64;
+}
+
+.lenses-selection-trigger-action:focus-visible {
+  outline: 2px solid var(--lenses-selection-accent-ring);
+  outline-offset: 2px;
+}
+
+.lenses-selection-trigger-action-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+}
+
+.lenses-selection-trigger-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  justify-self: center;
+  color: var(--lenses-selection-muted);
+}
+
+.lenses-selection-trigger-action:hover .lenses-selection-trigger-icon {
+  color: var(--lenses-selection-accent);
+}
+
+.lenses-selection-trigger-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.lenses-selection-trigger-key {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 1px solid var(--lenses-selection-line);
+  border-radius: var(--lenses-radius-sm);
+  color: var(--lenses-selection-muted);
+  background: var(--lenses-selection-paper-soft);
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
+.lenses-selection-trigger-divider {
+  height: 1px;
+  background: var(--lenses-selection-line-soft);
+  margin: 2px -5px;
+}
+
+.lenses-selection-trigger-lenses {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.lenses-selection-trigger-heading {
+  padding: 4px 7px 2px;
+  color: var(--lenses-selection-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lenses-selection-trigger-lens-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lenses-selection-trigger-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--lenses-radius-pill);
+  box-shadow: 0 0 0 2px var(--lenses-selection-paper-soft);
+}
+
+.lenses-selection-trigger-empty,
+.lenses-selection-trigger-status {
+  padding: 5px 7px;
+  color: var(--lenses-selection-muted);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.lenses-selection-trigger-status {
+  border-top: 1px solid var(--lenses-selection-line-soft);
+  margin-top: 2px;
+}
+
+.lenses-selection-trigger[data-state="error"] .lenses-selection-trigger-status {
+  color: #b91c1c;
+}
+
+.lenses-selection-trigger[data-state="ready"] .lenses-selection-trigger-status {
+  color: #047857;
+}
+
+@keyframes lenses-selection-trigger-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

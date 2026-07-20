@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popup ↔ Selection panel coherence</title>
+    <link rel="icon" href="data:," />
+    <style>
+      /* ============================================================
+         SHARED DESIGN TOKENS — extracted from the selection chatbox
+         so popup, panel and chatbox draw from the same well.
+         ============================================================ */
+      :root {
+        color-scheme: light;
+
+        --ink: #111827;
+        --ink-soft: #1f2937;
+        --text: #374151;
+        --muted: #6b7280;
+        --faint: #9ca3af;
+        --hush: #d1d5db;
+
+        --line: #d8dbe4;       /* the "panel" border */
+        --line-soft: #eef0f4;  /* internal dividers */
+        --line-faint: #f3f4f6; /* hover backgrounds */
+
+        --paper: #ffffff;
+        --paper-soft: #fbfbfc;  /* input resting; also page bg */
+        --paper-warm: #f9fafb;
+
+        --accent: #6366f1;
+        --accent-strong: #4f46e5;
+        --accent-stronger: #4338ca;
+        --accent-rule: #c7d2fe;   /* blockquote left rule */
+        --accent-tint: #eef2ff;   /* pill tint */
+        --accent-ring: rgba(99, 102, 241, 0.14);
+
+        --radius-panel: 14px;
+        --radius-card: 10px;
+        --radius-btn: 7px;
+        --radius-pill: 6px;
+
+        --shadow-panel: 0 14px 48px rgba(17, 24, 39, 0.2);
+        --shadow-soft: 0 1px 2px rgba(17, 24, 39, 0.04);
+
+        --font-system:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        min-height: 100vh;
+        background:
+          radial-gradient(1200px 600px at 20% -10%, #eef2ff 0%, transparent 55%),
+          #f4f5f8;
+        color: var(--ink);
+        font-family: var(--font-system);
+        font-size: 14px;
+      }
+
+      .stage {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 40px;
+        align-items: start;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .stage-eyebrow {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+
+      .panel-shell {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow-panel);
+        overflow: hidden;
+      }
+
+      .reference-col { display: flex; flex-direction: column; gap: 28px; }
+
+      /* ============================================================
+         POPUP — the "rest of the app" redesigned to match the panel
+         ============================================================ */
+
+      .lenses-popup {
+        width: 320px;
+        font-family: var(--font-system);
+        font-size: 14px;
+        color: var(--ink);
+        background: var(--paper-soft);
+      }
+
+      .lenses-popup-container {
+        padding: 16px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* Wordmark: small indigo eyebrow above a tight, low-weight wordmark.
+         No gradient — the eyebrow carries the accent. */
+      .lenses-popup-head {
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .lenses-popup-wordmark {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        line-height: 1.1;
+      }
+
+      /* Section eyebrow — micro headings */
+      .lenses-popup-section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin: 0 0 8px;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .lenses-popup-section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line-soft);
+      }
+
+      /* Lens chips: neutral chip, tiny per-lens dot at left. The dot
+         carries the lens's identity color (same idea as the selection
+         trigger dot). On check, indigo solid — no rainbow gradients. */
+      .lenses-popup-lens-options {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .lenses-popup-lens-option {
+        position: relative;
+        display: block;
+        cursor: pointer;
+      }
+      .lenses-popup-lens-option input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .lenses-popup-lens-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-btn);
+        background: var(--paper);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.25;
+        transition: background-color 0.12s ease, border-color 0.12s ease,
+          color 0.12s ease, box-shadow 0.12s ease;
+      }
+      .lenses-popup-lens-chip:hover {
+        background: var(--paper);
+        border-color: #c7cad6;
+        color: var(--ink);
+      }
+      .lenses-popup-lens-dot {
+        width: 8px;
+        height: 8px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.06);
+      }
+      .lenses-popup-lens-name {
+        flex: 1;
+        min-width: 0;
+      }
+      .lenses-popup-lens-check {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 auto;
+        border-radius: 4px;
+        border: 1px solid var(--hush);
+        background: var(--paper);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: transparent;
+        font-size: 9px;
+        line-height: 1;
+        transition: background-color 0.12s ease, border-color 0.12s ease,
+          color 0.12s ease;
+      }
+      .lenses-popup-lens-option input:checked + .lenses-popup-lens-chip {
+        border-color: var(--accent-strong);
+        background: var(--accent-tint);
+        color: var(--ink);
+        box-shadow: 0 0 0 1px var(--accent-strong) inset;
+      }
+      .lenses-popup-lens-option input:checked + .lenses-popup-lens-chip .lenses-popup-lens-check {
+        background: var(--accent-strong);
+        border-color: var(--accent-strong);
+        color: white;
+      }
+
+      /* Toggle row */
+      .lenses-popup-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 0;
+        cursor: pointer;
+      }
+      .lenses-popup-toggle-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .lenses-popup-toggle-row input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .lenses-popup-toggle-switch {
+        position: relative;
+        width: 30px;
+        height: 18px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        transition: background-color 0.15s ease;
+        flex-shrink: 0;
+      }
+      .lenses-popup-toggle-switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.18s ease;
+        box-shadow: 0 1px 2px rgba(17, 24, 39, 0.18);
+      }
+      .lenses-popup-toggle-row input:checked + .lenses-popup-toggle-switch {
+        background: var(--accent-strong);
+      }
+      .lenses-popup-toggle-row input:checked + .lenses-popup-toggle-switch::after {
+        transform: translateX(12px);
+      }
+
+      /* Action row */
+      .lenses-popup-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .lenses-popup-btn {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        border-radius: var(--radius-btn);
+        transition: background-color 0.12s ease, color 0.12s ease,
+          border-color 0.12s ease, box-shadow 0.12s ease;
+      }
+      .lenses-popup-btn--primary {
+        flex: 1;
+        height: 34px;
+        padding: 0 14px;
+        background: var(--accent-strong);
+        color: white;
+        letter-spacing: 0.01em;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.14),
+          0 1px 0 rgba(17, 24, 39, 0.04);
+      }
+      .lenses-popup-btn--primary:hover:not(:disabled) {
+        background: var(--accent-stronger);
+      }
+      .lenses-popup-btn--primary:disabled {
+        background: #e5e7eb;
+        color: var(--faint);
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      .lenses-popup-btn--ghost {
+        height: 34px;
+        padding: 0 12px;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid transparent;
+      }
+      .lenses-popup-btn--ghost:hover {
+        background: var(--line-faint);
+        color: var(--ink);
+      }
+
+      /* Status pill — uses the same restraint as `.lenses-chat-meta-pill` */
+      .lenses-popup-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        background: var(--paper);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-btn);
+        font-size: 12px;
+        color: var(--text);
+      }
+      .lenses-popup-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-ring);
+        animation: lenses-popup-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes lenses-popup-pulse {
+        0%, 100% { opacity: 0.55; }
+        50% { opacity: 1; }
+      }
+      .lenses-popup-status--error {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #be123c;
+      }
+      .lenses-popup-status--error .lenses-popup-status-dot {
+        background: #be123c;
+        box-shadow: none;
+        animation: none;
+      }
+
+      /* Debug — same eyebrow/section pattern; soft outlined cards */
+      .lenses-popup-debug-card {
+        padding: 10px 12px;
+        background: var(--paper);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-card);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .lenses-popup-debug-card .lenses-popup-toggle-label {
+        font-size: 12px;
+        color: var(--text);
+      }
+
+      .lenses-popup-field-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .lenses-popup-field-label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .lenses-popup-number {
+        width: 64px;
+        height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-btn);
+        background: var(--paper);
+        color: var(--ink);
+        font: inherit;
+        font-size: 12px;
+        transition: border-color 0.12s ease, box-shadow 0.12s ease;
+      }
+      .lenses-popup-number:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-ring);
+      }
+
+      .lenses-popup-debug-link {
+        appearance: none;
+        border: 1px solid var(--line-soft);
+        background: var(--paper);
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 7px 10px;
+        border-radius: var(--radius-btn);
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.12s ease, color 0.12s ease,
+          border-color 0.12s ease;
+      }
+      .lenses-popup-debug-link:hover {
+        background: var(--line-faint);
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .lenses-popup-debug-link--danger {
+        color: #b91c1c;
+      }
+      .lenses-popup-debug-link--danger:hover {
+        background: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+      }
+
+      .lenses-popup-fixture-item {
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-btn);
+        padding: 8px 10px;
+        background: var(--paper);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .lenses-popup-fixture-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .lenses-popup-fixture-path {
+        font-size: 11px;
+        color: var(--faint);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        overflow-wrap: anywhere;
+      }
+      .lenses-popup-fixture-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .lenses-popup-fixture-action {
+        appearance: none;
+        border: 1px solid var(--line-soft);
+        border-radius: 5px;
+        background: var(--paper-warm);
+        color: var(--muted);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 8px;
+        cursor: pointer;
+        letter-spacing: 0.01em;
+        transition: color 0.12s ease, border-color 0.12s ease,
+          background-color 0.12s ease;
+      }
+      .lenses-popup-fixture-action:hover {
+        background: var(--paper);
+        color: var(--ink);
+        border-color: var(--line);
+      }
+
+      /* Footer — connection */
+      .lenses-popup-footer {
+        margin-top: 4px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line-soft);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--faint);
+      }
+      .lenses-popup-footer-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--hush);
+      }
+      .lenses-popup-footer.is-connected .lenses-popup-footer-dot {
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+      }
+      .lenses-popup-footer.is-disconnected .lenses-popup-footer-dot {
+        background: #ef4444;
+      }
+
+      /* ============================================================
+         REFERENCE — selection panel + chatbox (excerpted styles
+         lifted verbatim from highlight.css)
+         ============================================================ */
+
+      /* Trigger panel */
+      .lenses-selection-trigger {
+        width: 260px;
+        box-sizing: border-box;
+        border: 1px solid #d8dbe4;
+        background: #ffffff;
+        color: #111827;
+        font-family: var(--font-system);
+        padding: 6px;
+        border-radius: 10px;
+        box-shadow:
+          0 0 0 1.5px rgba(255, 255, 255, 0.92),
+          0 14px 42px rgba(17, 24, 39, 0.22);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        user-select: none;
+        color-scheme: light;
+      }
+      .lenses-selection-trigger-action {
+        appearance: none;
+        width: 100%;
+        min-height: 34px;
+        box-sizing: border-box;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #111827;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 8px;
+        font: inherit;
+        font-size: 13px;
+        line-height: 1.25;
+        text-align: left;
+      }
+      .lenses-selection-trigger-action:hover { background: #f3f4f6; }
+      .lenses-selection-trigger-action-main {
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lenses-selection-trigger-icon { width: 16px; height: 16px; color: #6b7280; }
+      .lenses-selection-trigger-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 600;
+      }
+      .lenses-selection-trigger-key {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        height: 16px;
+        box-sizing: border-box;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        color: #6b7280;
+        background: #f9fafb;
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1;
+      }
+      .lenses-selection-trigger-divider {
+        height: 1px;
+        background: #eef0f4;
+        margin: 2px -6px;
+      }
+      .lenses-selection-trigger-heading {
+        padding: 4px 8px 2px;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .lenses-selection-trigger-lens-main {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lenses-selection-trigger-dot {
+        flex: 0 0 auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.06);
+      }
+      .lenses-selection-trigger-status {
+        padding: 6px 8px;
+        color: #047857;
+        font-size: 12px;
+        line-height: 1.35;
+        border-top: 1px solid #eef0f4;
+        margin-top: 2px;
+      }
+
+      /* Selection chatbox */
+      .lenses-chatbox--selection {
+        width: 480px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid #d8dbe4;
+        background: white;
+        box-shadow: 0 14px 48px rgba(17, 24, 39, 0.2);
+        font-family: var(--font-system);
+        color: #111827;
+        --composer-placeholder: #78716c;
+        --composer-send-size: 30px;
+        --composer-font-size: 13px;
+        --composer-line-height: 1.45;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eef0f4;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-header-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-eyebrow {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #6366f1;
+        line-height: 1;
+      }
+      .lenses-chatbox-selection-quote {
+        margin: 0;
+        padding: 2px 0 2px 12px;
+        border-left: 2px solid #c7d2fe;
+        font-size: 13.5px;
+        line-height: 1.5;
+        font-weight: 500;
+        color: #1f2937;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-form {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-input {
+        flex: 1;
+        height: var(--composer-send-size);
+        box-sizing: border-box;
+        padding: 2px 4px;
+        border: 1px solid #d8dbe4;
+        background: #fbfbfc;
+        font-size: var(--composer-font-size);
+        line-height: var(--composer-line-height);
+        border-radius: 7px;
+        color: #111827;
+        outline: none;
+      }
+      .lenses-chatbox--selection .lenses-chatbox-input::placeholder {
+        color: var(--composer-placeholder);
+      }
+      .lenses-chatbox--selection .lenses-chatbox-input:focus {
+        background: #ffffff;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.14);
+      }
+      .lenses-chatbox--selection .lenses-chatbox-send {
+        appearance: none;
+        width: var(--composer-send-size);
+        height: var(--composer-send-size);
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: #4f46e5;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-grid;
+        place-items: center;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.14),
+          0 1px 0 rgba(17, 24, 39, 0.04);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div>
+        <p class="stage-eyebrow">Popup — Redesigned to match</p>
+        <div class="panel-shell">
+          <div class="lenses-popup">
+            <div class="lenses-popup-container">
+              <header class="lenses-popup-head">
+                <span class="lenses-popup-wordmark">Lenses</span>
+              </header>
+
+              <section>
+                <p class="lenses-popup-section-label">Lenses</p>
+                <div class="lenses-popup-lens-options">
+                  <label class="lenses-popup-lens-option">
+                    <input type="checkbox" checked />
+                    <span class="lenses-popup-lens-chip">
+                      <span class="lenses-popup-lens-dot" style="background: #6366f1"></span>
+                      <span class="lenses-popup-lens-name">Claim Extractor</span>
+                      <span class="lenses-popup-lens-check">✓</span>
+                    </span>
+                  </label>
+                  <label class="lenses-popup-lens-option">
+                    <input type="checkbox" checked />
+                    <span class="lenses-popup-lens-chip">
+                      <span class="lenses-popup-lens-dot" style="background: #059669"></span>
+                      <span class="lenses-popup-lens-name">Source Tracer</span>
+                      <span class="lenses-popup-lens-check">✓</span>
+                    </span>
+                  </label>
+                  <label class="lenses-popup-lens-option">
+                    <input type="checkbox" />
+                    <span class="lenses-popup-lens-chip">
+                      <span class="lenses-popup-lens-dot" style="background: #c026d3"></span>
+                      <span class="lenses-popup-lens-name">Emotional Framing</span>
+                      <span class="lenses-popup-lens-check">✓</span>
+                    </span>
+                  </label>
+                </div>
+              </section>
+
+              <section>
+                <p class="lenses-popup-section-label">Behavior</p>
+                <label class="lenses-popup-toggle-row">
+                  <span class="lenses-popup-toggle-label">Auto-run on page load</span>
+                  <input type="checkbox" checked />
+                  <span class="lenses-popup-toggle-switch"></span>
+                </label>
+              </section>
+
+              <section class="lenses-popup-actions">
+                <button class="lenses-popup-btn lenses-popup-btn--primary">Run lenses</button>
+                <button class="lenses-popup-btn lenses-popup-btn--ghost">Clear</button>
+              </section>
+
+              <div class="lenses-popup-status">
+                <span class="lenses-popup-status-dot"></span>
+                <span>Running 2 lenses…</span>
+              </div>
+
+              <section>
+                <p class="lenses-popup-section-label">Debug</p>
+                <div class="lenses-popup-debug-card">
+                  <label class="lenses-popup-toggle-row">
+                    <span class="lenses-popup-toggle-label">Debug mode</span>
+                    <input type="checkbox" checked />
+                    <span class="lenses-popup-toggle-switch"></span>
+                  </label>
+                  <label class="lenses-popup-toggle-row">
+                    <span class="lenses-popup-toggle-label">Store lenses for this page</span>
+                    <input type="checkbox" />
+                    <span class="lenses-popup-toggle-switch"></span>
+                  </label>
+                  <div class="lenses-popup-field-row">
+                    <span class="lenses-popup-field-label">Max citations</span>
+                    <input type="number" class="lenses-popup-number" value="3" />
+                  </div>
+                  <button class="lenses-popup-debug-link">Open page debug view</button>
+                  <button class="lenses-popup-debug-link lenses-popup-debug-link--danger">
+                    Delete stored lenses for this page
+                  </button>
+                </div>
+              </section>
+
+              <footer class="lenses-popup-footer is-connected">
+                <span class="lenses-popup-footer-dot"></span>
+                <span>Connected</span>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reference-col">
+        <div>
+          <p class="stage-eyebrow">Reference — Selection trigger (don't touch)</p>
+          <div class="lenses-selection-trigger" data-state="ready">
+            <button class="lenses-selection-trigger-action">
+              <span class="lenses-selection-trigger-action-main">
+                <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M3 8h10M3 4h10M3 12h7"/>
+                </svg>
+                <span class="lenses-selection-trigger-label">Ask Lenses</span>
+              </span>
+              <span class="lenses-selection-trigger-key">A</span>
+            </button>
+            <button class="lenses-selection-trigger-action">
+              <span class="lenses-selection-trigger-action-main">
+                <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M2 4l4 4-4 4M8 13h6"/>
+                </svg>
+                <span class="lenses-selection-trigger-label">Trace source</span>
+              </span>
+              <span class="lenses-selection-trigger-key">S</span>
+            </button>
+            <div class="lenses-selection-trigger-divider"></div>
+            <p class="lenses-selection-trigger-heading">Active lenses</p>
+            <button class="lenses-selection-trigger-action">
+              <span class="lenses-selection-trigger-lens-main">
+                <span class="lenses-selection-trigger-dot" style="background: #6366f1"></span>
+                <span class="lenses-selection-trigger-label">Claim Extractor</span>
+              </span>
+              <span class="lenses-selection-trigger-key">1</span>
+            </button>
+            <button class="lenses-selection-trigger-action">
+              <span class="lenses-selection-trigger-lens-main">
+                <span class="lenses-selection-trigger-dot" style="background: #059669"></span>
+                <span class="lenses-selection-trigger-label">Source Tracer</span>
+              </span>
+              <span class="lenses-selection-trigger-key">2</span>
+            </button>
+            <div class="lenses-selection-trigger-status">2 lenses active on this page</div>
+          </div>
+        </div>
+
+        <div>
+          <p class="stage-eyebrow">Reference — Selection chatbox (don't touch)</p>
+          <div class="lenses-chatbox--selection">
+            <header class="lenses-chatbox-header">
+              <div class="lenses-chatbox-header-text">
+                <span class="lenses-chatbox-eyebrow">Ask about selection</span>
+                <blockquote class="lenses-chatbox-selection-quote">
+                  The study, published in 2024, found that participants reported a
+                  &ldquo;moderate to substantial&rdquo; improvement after eight weeks.
+                </blockquote>
+              </div>
+            </header>
+            <form class="lenses-chatbox-form" onsubmit="return false">
+              <input class="lenses-chatbox-input" placeholder="Ask a follow-up…" />
+              <button class="lenses-chatbox-send">Ask</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

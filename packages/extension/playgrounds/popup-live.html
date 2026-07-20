@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Live popup preview</title>
+    <link rel="stylesheet" href="../src/popup/popup.css" />
+    <style>
+      html, body { background: #f4f5f8; }
+      body { display: grid; place-items: start center; padding: 32px 24px; }
+      .frame {
+        border: 1px solid #d8dbe4;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 14px 48px rgba(17, 24, 39, 0.18);
+        overflow: hidden;
+        width: 320px;
+      }
+      /* Show debug sections that the real popup hides until "debug mode" */
+      .reveal-debug .hidden { display: revert !important; }
+      .reveal-debug #status.hidden { display: inline-flex !important; }
+      .reveal-debug #debug-panel.hidden,
+      .reveal-debug #debug-view-links.hidden,
+      .reveal-debug #debug-controls.hidden,
+      .reveal-debug #connection-footer.hidden { display: revert !important; }
+    </style>
+  </head>
+  <body class="reveal-debug">
+    <div class="frame">
+      <div class="container">
+        <header>
+          <h1>Lenses</h1>
+        </header>
+
+        <section class="lens-picker">
+          <p class="section-label">Lenses</p>
+          <div class="lens-options">
+            <label class="lens-option">
+              <input type="checkbox" value="claim-extractor" checked />
+              <span class="lens-chip">
+                <span class="lens-dot" data-lens="claim-extractor"></span>
+                <span class="lens-name">Claim Extractor</span>
+                <span class="lens-check" aria-hidden="true">&#10003;</span>
+              </span>
+            </label>
+            <label class="lens-option">
+              <input type="checkbox" value="source-tracer" checked />
+              <span class="lens-chip">
+                <span class="lens-dot" data-lens="source-tracer"></span>
+                <span class="lens-name">Source Tracer</span>
+                <span class="lens-check" aria-hidden="true">&#10003;</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section class="auto-toggle">
+          <p class="section-label">Behavior</p>
+          <label class="toggle-row">
+            <span class="toggle-label">Auto-run on page load</span>
+            <input type="checkbox" id="auto-run" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </section>
+
+        <section class="actions">
+          <button class="primary">Run lenses</button>
+          <button class="ghost">Clear</button>
+        </section>
+
+        <section id="status" class="status">
+          <div class="spinner"></div>
+          <span>Running 2 lenses…</span>
+        </section>
+
+        <section id="debug-panel" class="debug-panel">
+          <p class="section-label">Debug</p>
+          <label class="toggle-row">
+            <span class="toggle-label">Debug mode</span>
+            <input type="checkbox" id="debug-mode" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </section>
+
+        <section id="debug-view-links" class="debug-view-links">
+          <button class="debug-link">Open page debug view</button>
+        </section>
+
+        <section id="debug-controls" class="debug-controls">
+          <label class="toggle-row">
+            <span class="toggle-label">Store lenses for this page</span>
+            <input type="checkbox" />
+            <span class="toggle-switch"></span>
+          </label>
+
+          <section class="test-settings">
+            <p class="test-settings-title">Test mode source checks</p>
+            <label class="test-field-row">
+              <span class="test-field-label">Max citations</span>
+              <input type="number" id="test-source-max-citations" value="3" />
+            </label>
+            <label class="toggle-row">
+              <span class="toggle-label">Use cached source checks</span>
+              <input type="checkbox" checked />
+              <span class="toggle-switch"></span>
+            </label>
+            <button class="debug-link">Renew source cache</button>
+          </section>
+
+          <section class="test-settings">
+            <p class="test-settings-title">Test fixtures</p>
+            <div class="fixture-list">
+              <article class="fixture-item">
+                <p class="fixture-title">Source check: synthetic sample</p>
+                <p class="fixture-path">test/fixtures/source-check-synthetic.txt</p>
+                <div class="fixture-actions">
+                  <button class="fixture-action-btn">Open</button>
+                  <button class="fixture-action-btn">Copy path</button>
+                  <button class="fixture-action-btn">Copy text</button>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <button class="debug-action">Delete stored lenses for this page</button>
+        </section>
+
+        <footer id="connection-footer" class="connection-footer">
+          <div class="connection connected">
+            <span class="dot"></span>
+            <span>Connected</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

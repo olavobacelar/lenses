@@ -1,0 +1,86 @@
+/* === Saved selection highlights ======================================= */
+
+mark.lenses-saved-highlight {
+  background: rgba(96, 165, 250, 0.3);
+  border: 0;
+  border-radius: 0;
+  box-decoration-break: slice;
+  -webkit-box-decoration-break: slice;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  word-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+mark.lenses-saved-highlight--changed {
+  background: rgba(96, 165, 250, 0.34);
+}
+
+html.lenses-saved-highlight-overlay-active mark.lenses-saved-highlight,
+html.lenses-saved-highlight-overlay-active mark.lenses-saved-highlight--changed {
+  background: transparent;
+}
+
+.lenses-saved-highlight-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2147483645;
+}
+
+.lenses-saved-highlight-overlay-rect {
+  position: absolute;
+  background: rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  mix-blend-mode: multiply;
+  pointer-events: auto;
+}
+
+.lenses-saved-highlight-overlay-rect--changed {
+  background: rgba(96, 165, 250, 0.34);
+}
+
+.lenses-saved-highlight-delete {
+  display: none;
+  appearance: none;
+  border: 1px solid #cbd5e1;
+  background: rgba(255, 255, 255, 0.95);
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  position: absolute;
+  top: -9px;
+  left: -9px;
+  z-index: 2147483646;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.lenses-saved-highlight-delete:hover {
+  color: #1e293b;
+  border-color: #94a3b8;
+}
+
+mark.lenses-saved-highlight:hover .lenses-saved-highlight-delete,
+mark.lenses-saved-highlight--active .lenses-saved-highlight-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

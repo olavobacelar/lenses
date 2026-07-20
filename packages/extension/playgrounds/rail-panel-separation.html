@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dock panel — many-lenses explorer</title>
+<style>
+  :root {
+    /* Shell */
+    --bg: #111110;
+    --bg-elev: #1a1917;
+    --bg-card: #1e1c19;
+    --line: #2a2622;
+    --line-strong: #36312b;
+    --ink: #ece8df;
+    --muted: #8d8880;
+    --dim: #5f5a52;
+    --ui-accent: #d97757;
+    --ui-accent-soft: rgba(217, 119, 87, 0.16);
+
+    /* Paper (the dock material — matches highlight.css) */
+    --paper: #f7f3ea;
+    --paper-soft: #ede7d8;
+    --paper-warm: #f3efe6;
+    --paper-line: #e3dbcb;
+    --paper-line-soft: #ebe5d6;
+    --paper-ink: #1f1d1a;
+    --paper-text: #2f2b25;
+    --paper-muted: #6b6457;
+    --paper-accent: #b85c44;
+    --paper-accent-strong: #9d4f3c;
+    --paper-accent-soft: #fdf4ee;
+    --paper-accent-rule: #e9cab7;
+
+    /* Simulated page */
+    --page-bg: #faf8f3;
+    --page-bar: #ece6d8;
+    --page-bar-strong: #d8d0bd;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    min-height: 100vh;
+  }
+
+  /* --- Header --- */
+  header.top {
+    padding: 26px 32px 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  header.top h1 {
+    margin: 0 0 4px;
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  header.top p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    max-width: 68ch;
+  }
+  header.top .top-meta {
+    color: var(--dim);
+    font-size: 11.5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+
+  /* --- Controls --- */
+  section.controls {
+    padding: 14px 32px 16px;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px 26px;
+    align-items: end;
+  }
+  .control { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .control label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .control label .v {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    color: var(--ink);
+    font-size: 11.5px;
+    letter-spacing: 0;
+    text-transform: none;
+    background: var(--bg-elev);
+    padding: 1px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  .control input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px;
+    background: var(--line-strong);
+    border-radius: 999px; outline: none; margin: 4px 0;
+  }
+  .control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--ui-accent);
+    border: 2px solid #1a1612;
+    cursor: pointer;
+  }
+  .control input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--ui-accent);
+    border: 2px solid #1a1612;
+    cursor: pointer;
+  }
+  .control .seg {
+    display: flex; background: var(--bg-elev);
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 2px; gap: 2px;
+  }
+  .control .seg button {
+    flex: 1; appearance: none; border: 0; background: transparent;
+    color: var(--muted); padding: 6px 8px; font-size: 11.5px;
+    font-weight: 600; border-radius: 6px; cursor: pointer;
+  }
+  .control .seg button:hover { color: var(--ink); }
+  .control .seg button[aria-pressed="true"] {
+    background: var(--ui-accent-soft); color: var(--ui-accent);
+  }
+
+  /* --- Gallery --- */
+  section.gallery {
+    padding: 24px 32px 220px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 22px;
+  }
+  article.strat {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.14s ease, transform 0.14s ease, box-shadow 0.14s ease;
+  }
+  article.strat:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+  article.strat.selected {
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 1px var(--ui-accent);
+  }
+  article.strat.selected .strat-name { color: var(--ui-accent); }
+
+  /* Each stage is a "viewport" the dock sits inside, so you can see overflow */
+  .stage {
+    position: relative;
+    height: 460px;
+    background: var(--page-bg);
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    color: var(--paper-text);
+  }
+  .stage .pmock {
+    position: absolute;
+    inset: 0;
+    padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .stage .pmock .pline {
+    height: 9px;
+    background: var(--page-bar);
+    border-radius: 3px;
+  }
+  .stage .pmock .pline.h { height: 13px; background: var(--page-bar-strong); width: 60%; margin-bottom: 4px; }
+  .stage .pmock .pline.s { width: 70%; }
+  .stage .pmock .pline.t { width: 35%; }
+
+  /* The dock host: anchored right, vertically centered */
+  .dock {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--paper-ink);
+    max-width: calc(100% - 24px);
+  }
+  /* Some strategies anchor differently */
+  [data-strat="topAnchor"] .dock { top: 12px; transform: none; }
+
+  /* --- Rail (kept the same across strategies — that's not what we're testing) --- */
+  .rail {
+    width: 38px;
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    border-right: 0;
+    border-radius: 12px 0 0 12px;
+    box-shadow: 0 6px 18px rgba(28,25,23,0.12);
+    padding: 6px 4px;
+    display: flex; flex-direction: column; gap: 4px;
+    color: var(--paper-muted);
+    flex: 0 0 auto;
+  }
+  .rail .rbtn {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .rail .rbtn.active {
+    background: var(--paper-accent-soft);
+    border-color: var(--paper-accent-rule);
+    color: var(--paper-accent-strong);
+  }
+  .rail .rbtn svg { width: 14px; height: 14px; display: block; }
+
+  /* --- Panel (base styles; strategies override) --- */
+  .panel {
+    width: 188px;
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    border-radius: 12px;
+    box-shadow: 0 12px 34px rgba(28,25,23,0.12);
+    overflow: hidden;
+    color: var(--paper-text);
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px 6px;
+    color: var(--paper-muted);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+  }
+  .panel-head .pedit {
+    width: 20px; height: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--paper-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .panel-head .pedit svg { width: 12px; height: 12px; }
+  .panel-list {
+    padding: 2px 10px 10px;
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 0;
+  }
+  .panel-list .group {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .panel-list .group + .group {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--paper-line-soft);
+  }
+  .pill {
+    height: 24px;
+    border-radius: 999px;
+    background: var(--paper-soft);
+    border: 1px solid var(--paper-line-soft);
+    padding: 0 10px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--paper-text);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pill .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--paper-accent);
+    flex: 0 0 auto;
+  }
+  .pill.user .dot { background: var(--paper-muted); }
+  .pill.active {
+    background: var(--paper-accent-soft);
+    border-color: var(--paper-accent-rule);
+    color: var(--paper-accent-strong);
+  }
+  .pill .lbl { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
+  /* === STRATEGY-SPECIFIC === */
+
+  /* 1. Overflow (current) — no limit; visibly clips past stage */
+  [data-strat="overflow"] .panel { }
+
+  /* 2. Bounded scroll — internal scroll, fade gradients */
+  [data-strat="scroll"] .panel { max-height: 380px; }
+  [data-strat="scroll"] .panel-list {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--paper-line) transparent;
+    position: relative;
+    mask-image: linear-gradient(180deg, transparent 0, black 8px, black calc(100% - 8px), transparent 100%);
+  }
+  [data-strat="scroll"] .panel-list::-webkit-scrollbar { width: 6px; }
+  [data-strat="scroll"] .panel-list::-webkit-scrollbar-thumb { background: var(--paper-line); border-radius: 3px; }
+
+  /* 3. Compact density — same shape, smaller items */
+  [data-strat="compact"] .pill { height: 20px; padding: 0 8px; font-size: 10.5px; }
+  [data-strat="compact"] .pill .dot { width: 5px; height: 5px; }
+  [data-strat="compact"] .panel-list { gap: 3px; }
+  [data-strat="compact"] .panel-list .group { gap: 3px; }
+  [data-strat="compact"] .panel { max-height: 420px; }
+  [data-strat="compact"] .panel-list { overflow-y: auto; scrollbar-width: thin; }
+
+  /* 4. Two-column — wider panel, pills in 2 columns */
+  [data-strat="twocol"] .panel { width: 280px; max-height: 420px; }
+  [data-strat="twocol"] .panel-list { overflow-y: auto; scrollbar-width: thin; }
+  [data-strat="twocol"] .panel-list .group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* 5. Wrap chips — wider, pills wrap as chip cloud */
+  [data-strat="wrap"] .panel { width: 240px; max-height: 420px; }
+  [data-strat="wrap"] .panel-list { overflow-y: auto; scrollbar-width: thin; }
+  [data-strat="wrap"] .panel-list .group {
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  [data-strat="wrap"] .pill { padding: 0 8px; font-size: 10.5px; height: 22px; }
+
+  /* 6. Filter search — input at top filters list */
+  [data-strat="filter"] .panel { max-height: 380px; }
+  [data-strat="filter"] .filter-input {
+    margin: 0 10px 6px;
+    padding: 6px 10px 6px 26px;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-warm) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b6457' stroke-width='1.6'><circle cx='7' cy='7' r='4.5'/><line x1='10.5' y1='10.5' x2='14' y2='14'/></svg>") no-repeat 8px center / 12px 12px;
+    font-size: 11px;
+    color: var(--paper-text);
+  }
+  [data-strat="filter"] .panel-list {
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  /* 7. Accordion groups — system pinned, user collapses */
+  [data-strat="accordion"] .panel { max-height: 380px; }
+  [data-strat="accordion"] .panel-list { overflow-y: auto; scrollbar-width: thin; }
+  [data-strat="accordion"] .group-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 2px 4px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--paper-muted);
+    cursor: pointer;
+    margin-top: 4px;
+    border-top: 1px solid var(--paper-line-soft);
+  }
+  [data-strat="accordion"] .group-toggle .caret { font-size: 9px; }
+
+  /* 8. Favorites + more — show N, rest behind a +X pill */
+  [data-strat="favorites"] .panel { max-height: 360px; }
+  [data-strat="favorites"] .more-pill {
+    background: var(--paper-warm);
+    border-style: dashed;
+    color: var(--paper-muted);
+    cursor: pointer;
+  }
+
+  /* 9. Top-anchored — panel attached to top, takes most of viewport, scrolls */
+  [data-strat="topAnchor"] .panel { max-height: 432px; }
+  [data-strat="topAnchor"] .panel-list { overflow-y: auto; scrollbar-width: thin; }
+
+  /* 10. Wide-list rows — drop pills, use a tighter list row format */
+  [data-strat="rows"] .panel { width: 220px; max-height: 420px; }
+  [data-strat="rows"] .panel-list { overflow-y: auto; scrollbar-width: thin; gap: 0; padding: 0 0 4px; }
+  [data-strat="rows"] .panel-list .group { gap: 0; }
+  [data-strat="rows"] .panel-list .group + .group { border-top: 0; margin-top: 0; padding-top: 0; }
+  [data-strat="rows"] .panel-list .group-sep {
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--paper-muted);
+    padding: 8px 12px 4px;
+    border-top: 1px solid var(--paper-line-soft);
+  }
+  [data-strat="rows"] .row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    font-size: 11px; font-weight: 600;
+    border: 0; border-radius: 0;
+    background: transparent;
+    color: var(--paper-text);
+    border-left: 2px solid transparent;
+  }
+  [data-strat="rows"] .row .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-accent); flex: 0 0 auto; }
+  [data-strat="rows"] .row.user .dot { background: var(--paper-muted); }
+  [data-strat="rows"] .row.active {
+    background: var(--paper-accent-soft);
+    color: var(--paper-accent-strong);
+    border-left-color: var(--paper-accent);
+  }
+
+  /* Floating "this overflows" warning badge */
+  .overflow-warn {
+    position: absolute;
+    left: 10px; bottom: 10px;
+    background: rgba(217, 71, 71, 0.9);
+    color: white;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    display: none;
+  }
+  article.strat.overflows .overflow-warn { display: block; }
+
+  /* --- Meta block --- */
+  .strat-meta { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .strat-meta .strat-name {
+    font-size: 13.5px; font-weight: 650; color: var(--ink);
+  }
+  .strat-meta .strat-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
+  .strat-meta .strat-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .strat-meta .strat-tag {
+    font-size: 10.5px; color: var(--dim);
+    background: var(--bg-elev); border: 1px solid var(--line);
+    padding: 1px 7px; border-radius: 999px;
+  }
+
+  /* --- Footer prompt --- */
+  footer.prompt-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 20;
+    background: linear-gradient(180deg, rgba(17,17,16,0) 0%, rgba(17,17,16,0.92) 30%, rgba(17,17,16,0.98) 100%);
+    backdrop-filter: blur(10px);
+    padding: 16px 32px 22px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px; align-items: end;
+  }
+  .prompt-wrap { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .prompt-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--dim); font-weight: 700;
+  }
+  #prompt {
+    margin: 0; padding: 12px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 12px; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    max-height: 160px; overflow: auto;
+  }
+  button#copy {
+    appearance: none;
+    border: 1px solid var(--ui-accent); background: var(--ui-accent);
+    color: #1a1612;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 700; font-size: 12.5px;
+    cursor: pointer;
+    align-self: stretch; white-space: nowrap;
+  }
+  button#copy:hover { background: #e58866; }
+  button#copy.copied { background: #6db86d; border-color: #6db86d; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div>
+    <h1>Dock panel · many-lenses explorer</h1>
+    <p>The current panel just grows vertically. Crank up the lens count and see how each layout strategy holds up. Strategies that fail show an "overflows" warning. Click a card to select it; the prompt at the bottom describes the chosen treatment.</p>
+  </div>
+  <div class="top-meta" id="metaTop">8 lenses · stage 460px</div>
+</header>
+
+<section class="controls">
+  <div class="control">
+    <label>Number of lenses <span class="v"><span id="vCount">8</span></span></label>
+    <input type="range" id="cCount" min="3" max="48" value="8" step="1">
+  </div>
+  <div class="control">
+    <label>User-lens share <span class="v"><span id="vUser">50</span>%</span></label>
+    <input type="range" id="cUser" min="0" max="100" value="50" step="5">
+  </div>
+  <div class="control">
+    <label>Selected share <span class="v"><span id="vSel">30</span>%</span></label>
+    <input type="range" id="cSel" min="0" max="100" value="30" step="5">
+  </div>
+  <div class="control">
+    <label>Stage height (sim viewport) <span class="v"><span id="vStage">460</span>px</span></label>
+    <input type="range" id="cStage" min="320" max="720" value="460" step="20">
+  </div>
+  <div class="control">
+    <label>Label length</label>
+    <div class="seg" id="cLen">
+      <button data-v="short">Short</button>
+      <button data-v="real" aria-pressed="true">Real</button>
+      <button data-v="long">Long</button>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery"></section>
+
+<footer class="prompt-bar">
+  <div class="prompt-wrap">
+    <div class="prompt-label">Prompt to send back</div>
+    <pre id="prompt"></pre>
+  </div>
+  <button id="copy">Copy prompt</button>
+</footer>
+
+<script>
+  // ---------- Strategy catalogue ----------
+  const STRATS = [
+    { id: 'overflow', name: 'No limit (current)', desc: 'Panel grows freely. Past the viewport it clips behind the page or extends off-screen. Baseline — shows the problem.', tags: ['baseline', 'breaks'] },
+    { id: 'scroll', name: 'Bounded scroll', desc: 'Cap the panel height (e.g. calc(80vh - 100px)) and scroll inside the lens list. Soft fade at the top/bottom edges signals more content.', tags: ['scroll', 'simple'] },
+    { id: 'compact', name: 'Compact density', desc: 'Same shape, smaller pills (20px tall, 10.5px text, tighter gap). Defers the overflow problem and saves vertical space across the board.', tags: ['dense', 'scroll'] },
+    { id: 'twocol', name: 'Two-column grid', desc: 'Widen the panel to ~280px and lay pills out in two equal columns. Almost doubles capacity before scrolling kicks in.', tags: ['wider', 'grid'] },
+    { id: 'wrap', name: 'Wrap chips', desc: 'Wider panel (~240px) with pills wrapping as chips. Optimal when labels vary in length — chips pack tightly.', tags: ['wider', 'chips'] },
+    { id: 'filter', name: 'Filter / search', desc: 'Small search input at the top filters the list as you type. Combined with bounded scroll, scales to any count.', tags: ['scales', 'input'] },
+    { id: 'accordion', name: 'Collapsible groups', desc: 'System lenses always visible; user lenses collapse behind a "Custom (N) ▾" header. Click to expand. Keeps default state small.', tags: ['groups', 'collapse'] },
+    { id: 'favorites', name: 'Favorites + more', desc: 'Show top N selected/recent lenses, plus a "+X more" pill that opens a dropdown menu with the rest. The panel stays a fixed small size.', tags: ['fixed', 'overflow menu'] },
+    { id: 'topAnchor', name: 'Top-anchored', desc: 'Drop vertical centering; anchor the panel to the top of the viewport and take up to ~90vh. Scroll inside. Predictable position regardless of size.', tags: ['anchor', 'predictable'] },
+    { id: 'rows', name: 'Wide list rows', desc: 'Trade pills for a tighter row format (full-width, no rounded background, left-border for selected). Significantly more items per height.', tags: ['list', 'dense'] },
+  ];
+
+  const DEFAULTS = { count: 8, userRatio: 50, selRatio: 30, stage: 460, len: 'real', strat: 'scroll' };
+  const state = { ...DEFAULTS };
+
+  // ---------- Sample lens labels (system + user) ----------
+  const SYSTEM_NAMES_SHORT = ['Skep', 'Src', 'Tone', 'Hedge', 'Claim', 'Frame'];
+  const SYSTEM_NAMES = ['Skepticism', 'Source check', 'Tone', 'Hedging', 'Claims', 'Framing'];
+  const SYSTEM_NAMES_LONG = ['Skepticism (default)', 'Source verification', 'Tone analysis', 'Hedging detection', 'Claim extraction', 'Framing review'];
+
+  const USER_NAMES_SHORT = ['Bias', 'Fact', 'Sci', 'Eco', 'Pol', 'Tech', 'Med', 'Law', 'Mkt', 'Edu', 'Hist', 'Eth', 'Stat', 'UX', 'AI', 'Lang'];
+  const USER_NAMES = ['Bias', 'Fact check', 'Science', 'Economics', 'Politics', 'Tech', 'Medical', 'Legal', 'Marketing', 'Education', 'History', 'Ethics', 'Statistics', 'UX', 'AI safety', 'Language'];
+  const USER_NAMES_LONG = ['Bias detector', 'Fact-checking against sources', 'Scientific claims review', 'Economic framing analysis', 'Political slant detection', 'Tech accuracy check', 'Medical claims verification', 'Legal accuracy', 'Marketing spin detector', 'Educational framing', 'Historical context', 'Ethical implications', 'Statistical literacy', 'UX writing quality', 'AI safety claims', 'Language and clarity'];
+
+  function pickNames(kind) {
+    if (state.len === 'short') return kind === 'sys' ? SYSTEM_NAMES_SHORT : USER_NAMES_SHORT;
+    if (state.len === 'long')  return kind === 'sys' ? SYSTEM_NAMES_LONG  : USER_NAMES_LONG;
+    return kind === 'sys' ? SYSTEM_NAMES : USER_NAMES;
+  }
+
+  function generateLenses() {
+    const total = state.count;
+    const userN = Math.round(total * state.userRatio / 100);
+    const sysN = total - userN;
+    const sysNames = pickNames('sys');
+    const usrNames = pickNames('user');
+    const sys = Array.from({ length: sysN }, (_, i) => ({
+      id: 'sys' + i, name: sysNames[i % sysNames.length] + (i >= sysNames.length ? ' ' + (Math.floor(i / sysNames.length) + 1) : ''),
+      kind: 'sys',
+    }));
+    const usr = Array.from({ length: userN }, (_, i) => ({
+      id: 'usr' + i, name: usrNames[i % usrNames.length] + (i >= usrNames.length ? ' ' + (Math.floor(i / usrNames.length) + 1) : ''),
+      kind: 'user',
+    }));
+    // Selection: stable pseudo-random based on index
+    const nSel = Math.round(total * state.selRatio / 100);
+    const all = [...sys, ...usr];
+    all.forEach((l, i) => { l.selected = i % Math.max(1, Math.round(total / Math.max(1, nSel))) === 0 && (nSel > 0); });
+    return { sys, usr };
+  }
+
+  // ---------- Markup helpers ----------
+  const ICONS = {
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.5 9 9 12 2"/></svg>',
+    bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
+  };
+
+  function railMarkup() {
+    const icons = ['star', 'eye', 'bookmark', 'dots'];
+    return `<div class="rail">${icons.map((k, i) =>
+      `<div class="rbtn${i === 0 ? ' active' : ''}">${ICONS[k]}</div>`
+    ).join('')}</div>`;
+  }
+
+  function pageMockMarkup() {
+    return `
+      <div class="pmock">
+        <div class="pline h"></div>
+        <div class="pline"></div>
+        <div class="pline s"></div>
+        <div class="pline"></div>
+        <div class="pline t"></div>
+        <div class="pline s"></div>
+        <div class="pline"></div>
+        <div class="pline t"></div>
+        <div class="pline"></div>
+        <div class="pline s"></div>
+        <div class="pline"></div>
+      </div>
+    `;
+  }
+
+  function pill(lens) {
+    const cls = ['pill'];
+    if (lens.kind === 'user') cls.push('user');
+    if (lens.selected) cls.push('active');
+    return `<span class="${cls.join(' ')}"><span class="dot"></span><span class="lbl">${lens.name}</span></span>`;
+  }
+
+  function row(lens) {
+    const cls = ['row'];
+    if (lens.kind === 'user') cls.push('user');
+    if (lens.selected) cls.push('active');
+    return `<div class="${cls.join(' ')}"><span class="dot"></span><span class="lbl">${lens.name}</span></div>`;
+  }
+
+  function panelHead() {
+    return `
+      <div class="panel-head">
+        <span>Lenses</span>
+        <button class="pedit" aria-label="Edit lenses">${ICONS.dots}</button>
+      </div>
+    `;
+  }
+
+  // Build the panel inner content for each strategy
+  function panelInner(strat, lenses) {
+    const { sys, usr } = lenses;
+    const all = [...sys, ...usr];
+
+    switch (strat) {
+      case 'filter':
+        return `
+          ${panelHead()}
+          <input class="filter-input" placeholder="Filter lenses…" />
+          <div class="panel-list">
+            <div class="group">${sys.map(pill).join('')}</div>
+            ${usr.length ? `<div class="group">${usr.map(pill).join('')}</div>` : ''}
+          </div>
+        `;
+
+      case 'accordion': {
+        return `
+          ${panelHead()}
+          <div class="panel-list">
+            <div class="group">${sys.map(pill).join('')}</div>
+            ${usr.length ? `
+              <div class="group-toggle">
+                <span>Custom (${usr.length})</span>
+                <span class="caret">▾</span>
+              </div>
+              <div class="group">${usr.map(pill).join('')}</div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      case 'favorites': {
+        const visible = all.slice(0, 5);
+        const hiddenN = Math.max(0, all.length - visible.length);
+        return `
+          ${panelHead()}
+          <div class="panel-list">
+            <div class="group">
+              ${visible.map(pill).join('')}
+              ${hiddenN > 0 ? `<span class="pill more-pill"><span>+${hiddenN} more</span></span>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      case 'rows': {
+        return `
+          ${panelHead()}
+          <div class="panel-list">
+            <div class="group">${sys.map(row).join('')}</div>
+            ${usr.length ? `
+              <div class="group-sep">Custom</div>
+              <div class="group">${usr.map(row).join('')}</div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      default:
+        return `
+          ${panelHead()}
+          <div class="panel-list">
+            <div class="group">${sys.map(pill).join('')}</div>
+            ${usr.length ? `<div class="group">${usr.map(pill).join('')}</div>` : ''}
+          </div>
+        `;
+    }
+  }
+
+  // ---------- Build gallery ----------
+  const gallery = document.getElementById('gallery');
+
+  function buildGallery() {
+    gallery.innerHTML = STRATS.map(s => `
+      <article class="strat${s.id === state.strat ? ' selected' : ''}" data-strat="${s.id}">
+        <div class="stage" style="height:${state.stage}px">
+          ${pageMockMarkup()}
+          <div class="dock">
+            <div class="panel">${panelInner(s.id, generateLenses())}</div>
+            ${railMarkup()}
+          </div>
+          <div class="overflow-warn">overflows viewport</div>
+        </div>
+        <div class="strat-meta">
+          <span class="strat-name">${s.name}</span>
+          <span class="strat-desc">${s.desc}</span>
+          <div class="strat-tags">${s.tags.map(t => `<span class="strat-tag">${t}</span>`).join('')}</div>
+        </div>
+      </article>
+    `).join('');
+
+    gallery.querySelectorAll('article.strat').forEach(el => {
+      el.addEventListener('click', () => {
+        state.strat = el.getAttribute('data-strat');
+        gallery.querySelectorAll('article.strat').forEach(n => n.classList.toggle('selected', n === el));
+        updatePrompt();
+      });
+    });
+
+    // After paint, check overflow per stage
+    requestAnimationFrame(() => {
+      gallery.querySelectorAll('article.strat').forEach(el => {
+        const stage = el.querySelector('.stage');
+        const panel = el.querySelector('.panel');
+        if (!stage || !panel) return;
+        const stageRect = stage.getBoundingClientRect();
+        const panelRect = panel.getBoundingClientRect();
+        const overflows =
+          panelRect.bottom > stageRect.bottom + 1 ||
+          panelRect.top < stageRect.top - 1 ||
+          panelRect.left < stageRect.left - 1;
+        el.classList.toggle('overflows', overflows);
+      });
+    });
+  }
+
+  // ---------- Prompt output ----------
+  function stratNarrative(id) {
+    const m = STRATS.find(x => x.id === id);
+    const refs = `(See packages/extension/src/content/highlight.css: .lenses-page-dock-panel from line 1785, .lenses-page-dock-lens-list from line 1953. The Lenses panel is rendered in packages/extension/src/content/PageLensDock.tsx around line 564.)`;
+
+    const tuning = [];
+    if (state.count !== DEFAULTS.count) tuning.push(`should hold up at ~${state.count} lenses`);
+    if (state.userRatio !== DEFAULTS.userRatio) tuning.push(`with ~${state.userRatio}% being user-created`);
+
+    const narratives = {
+      overflow: `Don't change the panel — but accept that with many lenses it will run off the viewport. (This is the current state, included as a baseline.)`,
+      scroll: `Cap the .lenses-page-dock-panel height (max-height: calc(80vh - 100px)) and set .lenses-page-dock-lens-list to overflow-y: auto. Add a top/bottom fade via mask-image so cut-off content reads as scrollable. Style the scrollbar minimally (6px, var(--lenses-dock-line) thumb).`,
+      compact: `Shrink the lens pills: height 20px, font-size 10.5px, padding 0 8px, dot 5px. Tighten the .lenses-page-dock-lens-list gap to 3px. Combine with a max-height + scroll so it caps gracefully. Pushes the breakpoint out significantly.`,
+      twocol: `Widen the panel to 280px (--lenses-dock-surface-width) and lay out .lenses-page-dock-lens-pills as a 2-column grid (display: grid; grid-template-columns: 1fr 1fr; gap: 6px). Pills already truncate via overflow:hidden so this works without label changes.`,
+      wrap: `Widen to ~240px and let pills wrap as a chip cloud (flex-wrap: wrap, gap 5px). Pills shrink to padding 0 8px and height 22px. Best when labels are short and vary in width — packs more efficiently than a grid.`,
+      filter: `Add a small filter input above .lenses-page-dock-lens-list (padding 6px 10px, search icon left). Filter pills in-place as the user types. Combined with bounded scroll, this scales indefinitely. Hide the input when count ≤ 8 to keep it out of the way in the default case.`,
+      accordion: `Keep the system lenses always visible (BAY_LENS_ORDER). Wrap user lenses in a collapsible group with a "Custom (N) ▾" header. Default to collapsed when N > 6. This keeps the panel small for casual users and explorable for power users.`,
+      favorites: `Show only the top 5 lenses (most recently used or pinned) plus a dashed "+N more" pill at the end. Clicking +N opens a Radix DropdownMenu with the full list. The panel stays a fixed small height regardless of count.`,
+      topAnchor: `Drop the vertical centering on .lenses-page-dock — change top: 50%; transform: translateY(-50%) to top: 12px; transform: none. Let the panel take up to 90vh, scroll inside. The rail still anchors to the same vertical position via its own translateY if you want to keep it centered, or move with the panel.`,
+      rows: `Drop the pill chrome inside .lenses-page-dock-lens-list — render rows instead: full-width, no rounded background, no border, font-size 11px, padding 6px 12px, a 2px left border for selected (var(--lenses-dock-accent)). A section separator labels "Custom". Significantly more lenses per height than pills.`,
+    };
+
+    let text = `Apply the "${m.name}" strategy to the dock panel so it gracefully handles many lenses.\n\n${narratives[id]}\n`;
+    if (tuning.length) text += `\nDesign target: ${tuning.join(' ')}.\n`;
+    text += '\n' + refs;
+    return text;
+  }
+
+  function updatePrompt() {
+    document.getElementById('prompt').textContent = stratNarrative(state.strat);
+  }
+
+  // ---------- Wire controls ----------
+  function rebuildAll() {
+    document.getElementById('vCount').textContent = state.count;
+    document.getElementById('vUser').textContent = state.userRatio;
+    document.getElementById('vSel').textContent = state.selRatio;
+    document.getElementById('vStage').textContent = state.stage;
+    document.getElementById('metaTop').textContent = `${state.count} lenses · stage ${state.stage}px · ${state.userRatio}% user · ${state.selRatio}% selected`;
+    buildGallery();
+    updatePrompt();
+  }
+
+  document.getElementById('cCount').addEventListener('input', e => { state.count = +e.target.value; rebuildAll(); });
+  document.getElementById('cUser').addEventListener('input', e => { state.userRatio = +e.target.value; rebuildAll(); });
+  document.getElementById('cSel').addEventListener('input', e => { state.selRatio = +e.target.value; rebuildAll(); });
+  document.getElementById('cStage').addEventListener('input', e => { state.stage = +e.target.value; rebuildAll(); });
+  document.getElementById('cLen').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-v]'); if (!btn) return;
+    state.len = btn.getAttribute('data-v');
+    document.querySelectorAll('#cLen button').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    rebuildAll();
+  });
+
+  // Copy
+  const copyBtn = document.getElementById('copy');
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('prompt').textContent);
+      copyBtn.classList.add('copied');
+      const orig = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.textContent = orig; }, 1400);
+    } catch {
+      copyBtn.textContent = 'Press ⌘C';
+      setTimeout(() => copyBtn.textContent = 'Copy prompt', 1400);
+    }
+  });
+
+  rebuildAll();
+</script>
+</body>
+</html>

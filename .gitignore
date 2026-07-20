@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+
+docs/
+
+# Generated artifacts, not source
+output/
+/outputs/
+/tmp/
+
+# Root-level smoke / debug screenshots
+/*-smoke.png
+/panel-fixed-720.png

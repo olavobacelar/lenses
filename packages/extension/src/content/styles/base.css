@@ -1,0 +1,14 @@
+.lenses-source-callout,
+.lenses-chatbox,
+.lenses-selection-trigger,
+.lenses-page-dock-root,
+.lenses-floating-citation-tooltip,
+.lenses-orphaned-panel {
+  --lenses-radius-xs: 4px;
+  --lenses-radius-sm: 6px;
+  --lenses-radius-md: 8px;
+  --lenses-radius-lg: 10px;
+  --lenses-radius-xl: 12px;
+  --lenses-radius-pill: 999px;
+  --lenses-radius-round: 50%;
+}

@@ -1,0 +1,619 @@
+/* === Dark theme for injected Lenses UI ================================== */
+/* Scoped to a namespaced attribute set by lib/theme.ts on the host <html>,
+   so we only restyle the Lenses chrome (popovers, menus, callouts) and never
+   the host page's own content or our inline highlights, which must keep
+   matching the page they sit on. The floating citation tooltip is already
+   dark in both themes and is intentionally left untouched. */
+
+[data-lenses-theme="dark"] .lenses-source-callout,
+html[data-lenses-theme="dark"] .lenses-source-callout {
+  --lenses-callout-ink: #ececec;
+  --lenses-callout-text: #b6b6b6;
+  --lenses-callout-muted: #8c8c8d;
+  --lenses-callout-line: #424243;
+  --lenses-callout-line-soft: #323234;
+  --lenses-callout-paper: #323234;
+  --lenses-callout-paper-soft: #1b1b1d;
+  --lenses-callout-paper-warm: #2d2d2f;
+  --lenses-callout-accent: #7aa2f7;
+  --lenses-callout-accent-strong: #8aadf8;
+  --lenses-callout-shadow: rgba(0, 0, 0, 0.36);
+  background: var(--lenses-callout-paper);
+  border-color: var(--lenses-callout-line);
+  color: var(--lenses-callout-ink);
+  color-scheme: dark;
+  box-shadow: 0 10px 28px var(--lenses-callout-shadow);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-close,
+html[data-lenses-theme="dark"] .lenses-source-callout-close {
+  color: var(--lenses-callout-muted);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-close:hover,
+html[data-lenses-theme="dark"] .lenses-source-callout-close:hover {
+  color: var(--lenses-callout-ink);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-status,
+html[data-lenses-theme="dark"] .lenses-source-callout-status {
+  color: var(--lenses-callout-text);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-status.is-loading,
+html[data-lenses-theme="dark"] .lenses-source-callout-status.is-loading {
+  color: var(--lenses-callout-muted);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-status.is-searching,
+html[data-lenses-theme="dark"] .lenses-source-callout-status.is-searching {
+  color: var(--lenses-callout-accent-strong);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-status.is-error,
+html[data-lenses-theme="dark"] .lenses-source-callout-status.is-error {
+  color: #f87171;
+}
+[data-lenses-theme="dark"] .lenses-source-callout-intermediate summary,
+html[data-lenses-theme="dark"] .lenses-source-callout-intermediate summary {
+  color: var(--lenses-callout-muted);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-intermediate summary:hover,
+html[data-lenses-theme="dark"] .lenses-source-callout-intermediate summary:hover {
+  color: var(--lenses-callout-text);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-block-title,
+html[data-lenses-theme="dark"] .lenses-source-callout-block-title {
+  color: var(--lenses-callout-muted);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-thinking-content,
+html[data-lenses-theme="dark"] .lenses-source-callout-thinking-content {
+  color: var(--lenses-callout-muted);
+}
+[data-lenses-theme="dark"] .lenses-source-callout-answer,
+html[data-lenses-theme="dark"] .lenses-source-callout-answer {
+  color: var(--lenses-callout-ink);
+}
+[data-lenses-theme="dark"] .lenses-chatbox,
+html[data-lenses-theme="dark"] .lenses-chatbox {
+  --lenses-chat-ink: #ececec;
+  --lenses-chat-text: #b6b6b6;
+  --lenses-chat-muted: #8c8c8d;
+  --lenses-chat-line: #424243;
+  --lenses-chat-line-soft: #323234;
+  --lenses-chat-paper: #323234;
+  --lenses-chat-paper-soft: #1b1b1d;
+  --lenses-chat-paper-warm: #2d2d2f;
+  --lenses-chat-accent: #7aa2f7;
+  --lenses-chat-accent-strong: #8aadf8;
+  --lenses-chat-accent-rule: #46587f;
+  --lenses-chat-accent-soft: #2a3140;
+  --lenses-chat-accent-ring: rgba(122, 162, 247, 0.28);
+  --lenses-chat-shadow: rgba(0, 0, 0, 0.42);
+  --lenses-chat-send-bg: #ededed;
+  --lenses-chat-send-bg-hover: #ffffff;
+  --lenses-chat-send-ink: #1b1b1d;
+  /* The floating in-page panel mirrors the sidepanel chat: it sits on the dark
+     --lenses-chat-paper-soft (#1b1b1d) base — not the lighter #323234 it used
+     before — so the user bubble reuses the sidepanel's #34353a, and recessed
+     blocks (code, thinking, verdicts) lift to --lenses-chat-paper (#323234) to
+     stay visible on the dark panel. A light frame (vs. the page-blind shadow)
+     keeps the panel edge legible over any page, dark or light. */
+  --lenses-chat-user-bubble-bg: #34353a;
+  background: var(--lenses-chat-paper-soft);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: var(--lenses-chat-ink);
+  color-scheme: dark;
+  box-shadow: 0 12px 34px var(--lenses-chat-shadow);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-title,
+html[data-lenses-theme="dark"] .lenses-chatbox-title {
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-subtitle,
+html[data-lenses-theme="dark"] .lenses-chatbox-subtitle {
+  color: var(--lenses-chat-muted);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-close,
+html[data-lenses-theme="dark"] .lenses-chatbox-close,
+[data-lenses-theme="dark"] .lenses-chatbox-delete,
+html[data-lenses-theme="dark"] .lenses-chatbox-delete {
+  color: var(--lenses-chat-muted);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-close:hover,
+html[data-lenses-theme="dark"] .lenses-chatbox-close:hover {
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-delete:hover,
+html[data-lenses-theme="dark"] .lenses-chatbox-delete:hover {
+  color: #f87171;
+}
+[data-lenses-theme="dark"] .lenses-chatbox-annotation-row,
+html[data-lenses-theme="dark"] .lenses-chatbox-annotation-row {
+  border-color: var(--lenses-chat-line);
+  border-left-color: var(--lenses-chat-muted);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-annotation-row:hover,
+html[data-lenses-theme="dark"] .lenses-chatbox-annotation-row:hover {
+  background: var(--lenses-chat-paper-warm);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-annotation-row.active,
+html[data-lenses-theme="dark"] .lenses-chatbox-annotation-row.active {
+  border-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-accent-soft);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-annotation-confidence,
+html[data-lenses-theme="dark"] .lenses-chatbox-annotation-confidence,
+[data-lenses-theme="dark"] .lenses-chatbox-annotation-detail,
+html[data-lenses-theme="dark"] .lenses-chatbox-annotation-detail {
+  color: var(--lenses-chat-muted);
+}
+/* INTERNAL_TOOLS_START */
+[data-lenses-theme="dark"] .lenses-chatbox-debug-btn,
+html[data-lenses-theme="dark"] .lenses-chatbox-debug-btn {
+  border-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-accent-strong);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-debug-btn:hover,
+html[data-lenses-theme="dark"] .lenses-chatbox-debug-btn:hover {
+  background: var(--lenses-chat-paper-warm);
+}
+/* INTERNAL_TOOLS_END */
+[data-lenses-theme="dark"] .lenses-chatbox-selection-card,
+html[data-lenses-theme="dark"] .lenses-chatbox-selection-card {
+  border-color: var(--lenses-chat-line);
+  border-left-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+}
+
+[data-lenses-theme="dark"] .lenses-chat-message.assistant,
+html[data-lenses-theme="dark"] .lenses-chat-message.assistant {
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-chat-message.markdown pre,
+html[data-lenses-theme="dark"] .lenses-chat-message.markdown pre {
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-chat-message.markdown :not(pre) > code,
+html[data-lenses-theme="dark"] .lenses-chat-message.markdown :not(pre) > code {
+  background: var(--lenses-chat-paper);
+}
+[data-lenses-theme="dark"] .lenses-chat-message.markdown blockquote,
+html[data-lenses-theme="dark"] .lenses-chat-message.markdown blockquote {
+  border-left-color: var(--lenses-chat-accent-rule);
+  color: var(--lenses-chat-text);
+}
+[data-lenses-theme="dark"] .lenses-chat-message.markdown a,
+html[data-lenses-theme="dark"] .lenses-chat-message.markdown a {
+  color: var(--lenses-chat-accent-strong);
+}
+[data-lenses-theme="dark"] .lenses-chat-message.error,
+html[data-lenses-theme="dark"] .lenses-chat-message.error {
+  border-color: #5b2526;
+  background: #2a1517;
+  color: #fca5a5;
+}
+[data-lenses-theme="dark"] .lenses-chat-message-action,
+html[data-lenses-theme="dark"] .lenses-chat-message-action {
+  border-color: #5b2526;
+  color: #fecdd3;
+  background: var(--lenses-chat-paper);
+}
+[data-lenses-theme="dark"] .lenses-chat-message-action:hover,
+html[data-lenses-theme="dark"] .lenses-chat-message-action:hover {
+  border-color: #fb7185;
+  background: var(--lenses-chat-paper-warm);
+}
+[data-lenses-theme="dark"] .lenses-chat-loading,
+html[data-lenses-theme="dark"] .lenses-chat-loading {
+  color: var(--lenses-chat-muted);
+}
+[data-lenses-theme="dark"] .lenses-chat-thinking,
+html[data-lenses-theme="dark"] .lenses-chat-thinking {
+  border-color: var(--lenses-chat-line);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-muted);
+}
+[data-lenses-theme="dark"] .lenses-chat-thinking[open],
+html[data-lenses-theme="dark"] .lenses-chat-thinking[open] {
+  background: var(--lenses-chat-paper-warm);
+}
+[data-lenses-theme="dark"] .lenses-chat-thinking summary,
+html[data-lenses-theme="dark"] .lenses-chat-thinking summary,
+[data-lenses-theme="dark"] .lenses-chat-thinking-content,
+html[data-lenses-theme="dark"] .lenses-chat-thinking-content {
+  color: var(--lenses-chat-muted);
+}
+[data-lenses-theme="dark"] .lenses-chat-searching,
+html[data-lenses-theme="dark"] .lenses-chat-searching {
+  border-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-accent-strong);
+}
+
+[data-lenses-theme="dark"] .lenses-chat-verdict,
+html[data-lenses-theme="dark"] .lenses-chat-verdict,
+[data-lenses-theme="dark"] .lenses-chat-meta-pill,
+html[data-lenses-theme="dark"] .lenses-chat-meta-pill {
+  border-color: var(--lenses-chat-line);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-text);
+}
+[data-lenses-theme="dark"] .lenses-chat-verdict--true,
+html[data-lenses-theme="dark"] .lenses-chat-verdict--true {
+  border-color: #1f3b2a;
+  background: #122017;
+  color: #86efac;
+}
+[data-lenses-theme="dark"] .lenses-chat-verdict--false,
+html[data-lenses-theme="dark"] .lenses-chat-verdict--false {
+  border-color: #5b2526;
+  background: #2a1517;
+  color: #fca5a5;
+}
+[data-lenses-theme="dark"] .lenses-chat-verdict--mixed,
+html[data-lenses-theme="dark"] .lenses-chat-verdict--mixed {
+  border-color: #5a4622;
+  background: #2a2113;
+  color: #fcd34d;
+}
+[data-lenses-theme="dark"] .lenses-chat-verdict--unverifiable,
+html[data-lenses-theme="dark"] .lenses-chat-verdict--unverifiable {
+  border-color: var(--lenses-chat-line);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-text);
+}
+
+[data-lenses-theme="dark"] .lenses-chat-message a.citation-badge,
+html[data-lenses-theme="dark"] .lenses-chat-message a.citation-badge,
+[data-lenses-theme="dark"] .lenses-source-callout-answer a.citation-badge,
+html[data-lenses-theme="dark"] .lenses-source-callout-answer a.citation-badge {
+  border-color: var(--lenses-chat-line, #424243);
+  background: var(--lenses-chat-paper-soft, #1b1b1d);
+  color: var(--lenses-chat-text, #b6b6b6);
+}
+[data-lenses-theme="dark"] .lenses-chat-message a.citation-badge:hover,
+html[data-lenses-theme="dark"] .lenses-chat-message a.citation-badge:hover,
+[data-lenses-theme="dark"] .lenses-source-callout-answer a.citation-badge:hover,
+html[data-lenses-theme="dark"] .lenses-source-callout-answer a.citation-badge:hover {
+  border-color: var(--lenses-chat-accent-rule, #46587f);
+  background: var(--lenses-chat-paper-warm, #2d2d2f);
+  color: var(--lenses-chat-ink, #ececec);
+}
+
+[data-lenses-theme="dark"] .lenses-chat-message.user,
+html[data-lenses-theme="dark"] .lenses-chat-message.user {
+  color: var(--lenses-chat-user-bubble-ink);
+}
+
+/* Dark token vars (--lenses-chat-*) already flip with theme, so the base
+   input/form/placeholder/disabled rules don't need dark overrides. The
+   monochrome send button likewise reads its colors from --lenses-chat-send-*,
+   which flip with the theme (near-white fill, dark glyph in dark mode), so it
+   needs no dark-specific override here. */
+
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-header,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-header,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-header,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-header {
+  border-bottom-color: var(--lenses-chat-line-soft);
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-eyebrow,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-eyebrow,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-eyebrow,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-eyebrow {
+  color: var(--lenses-chat-accent);
+}
+[data-lenses-theme="dark"] .lenses-chatbox-selection-quote,
+html[data-lenses-theme="dark"] .lenses-chatbox-selection-quote {
+  border-left-color: var(--lenses-chat-accent-rule);
+  color: var(--lenses-chat-ink);
+}
+[data-lenses-theme="dark"] .lenses-quote-ref,
+html[data-lenses-theme="dark"] .lenses-quote-ref {
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-accent-strong);
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-message.assistant,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-message.assistant,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-message.assistant,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-message.assistant {
+  background: transparent;
+  color: var(--lenses-chat-text);
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-thinking[open],
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-thinking[open],
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-thinking[open],
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-thinking[open] {
+  border-color: var(--lenses-chat-line-soft);
+  background: var(--lenses-chat-paper);
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking,
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking[open],
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking[open],
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking[open],
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking[open] {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input {
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input:hover:not(:disabled),
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input:hover:not(:disabled),
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input:hover:not(:disabled),
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input:hover:not(:disabled) {
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input:focus,
+html[data-lenses-theme="dark"] .lenses-chatbox--detached .lenses-chatbox-input:focus,
+[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input:focus,
+html[data-lenses-theme="dark"] .lenses-chatbox--selection .lenses-chatbox-input:focus {
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none;
+}
+
+[data-lenses-theme="dark"] .lenses-selection-trigger,
+html[data-lenses-theme="dark"] .lenses-selection-trigger {
+  --lenses-selection-ink: #ececec;
+  --lenses-selection-text: #b6b6b6;
+  --lenses-selection-muted: #8c8c8d;
+  --lenses-selection-line: #424243;
+  --lenses-selection-line-soft: #323234;
+  --lenses-selection-paper: #323234;
+  --lenses-selection-paper-soft: #1b1b1d;
+  --lenses-selection-paper-warm: #2d2d2f;
+  --lenses-selection-accent: #7aa2f7;
+  --lenses-selection-accent-soft: #2a3140;
+  --lenses-selection-accent-ring: rgba(122, 162, 247, 0.28);
+  --lenses-selection-shadow: rgba(0, 0, 0, 0.36);
+  border-color: var(--lenses-selection-line);
+  background: var(--lenses-selection-paper);
+  color: var(--lenses-selection-ink);
+  color-scheme: dark;
+  box-shadow: 0 12px 34px var(--lenses-selection-shadow);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-action,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-action {
+  color: var(--lenses-selection-ink);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-action:hover,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-action:hover {
+  border-color: var(--lenses-selection-line-soft);
+  background: var(--lenses-selection-paper-soft);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-action:active,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-action:active {
+  background: var(--lenses-selection-paper-warm);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-icon,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-icon {
+  color: var(--lenses-selection-muted);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-action:hover .lenses-selection-trigger-icon,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-action:hover .lenses-selection-trigger-icon {
+  color: var(--lenses-selection-accent);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-key,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-key {
+  border-color: var(--lenses-selection-line);
+  background: var(--lenses-selection-paper-soft);
+  color: var(--lenses-selection-muted);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-divider,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-divider {
+  background: var(--lenses-selection-line-soft);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-heading,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-heading,
+[data-lenses-theme="dark"] .lenses-selection-trigger-empty,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-empty,
+[data-lenses-theme="dark"] .lenses-selection-trigger-status,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-status {
+  color: var(--lenses-selection-muted);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger-status,
+html[data-lenses-theme="dark"] .lenses-selection-trigger-status {
+  border-top-color: var(--lenses-selection-line-soft);
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger[data-state="error"] .lenses-selection-trigger-status,
+html[data-lenses-theme="dark"] .lenses-selection-trigger[data-state="error"] .lenses-selection-trigger-status {
+  color: #f87171;
+}
+[data-lenses-theme="dark"] .lenses-selection-trigger[data-state="ready"] .lenses-selection-trigger-status,
+html[data-lenses-theme="dark"] .lenses-selection-trigger[data-state="ready"] .lenses-selection-trigger-status {
+  color: #34d399;
+}
+
+[data-lenses-theme="dark"] .lenses-page-dock-root,
+html[data-lenses-theme="dark"] .lenses-page-dock-root {
+  --lenses-dock-ink: #ececec;
+  --lenses-dock-text: #b6b6b6;
+  --lenses-dock-muted: #8c8c8d;
+  --lenses-dock-line: #424243;
+  --lenses-dock-line-soft: #323234;
+  --lenses-dock-paper: #323234;
+  --lenses-dock-paper-soft: #1b1b1d;
+  --lenses-dock-paper-warm: #2d2d2f;
+  --lenses-dock-accent: #7aa2f7;
+  --lenses-dock-accent-strong: #8aadf8;
+  --lenses-dock-accent-rule: #46587f;
+  --lenses-dock-accent-soft: #2a3140;
+  --lenses-dock-accent-ring: rgba(122, 162, 247, 0.28);
+  --lenses-dock-shadow: rgba(0, 0, 0, 0.34);
+  color: #ececec;
+  color-scheme: dark;
+}
+[data-lenses-theme="dark"] .lenses-page-dock-rail,
+html[data-lenses-theme="dark"] .lenses-page-dock-rail {
+  border-color: var(--lenses-dock-line);
+  background: var(--lenses-dock-paper);
+  box-shadow: 0 6px 18px var(--lenses-dock-shadow);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-button,
+html[data-lenses-theme="dark"] .lenses-page-dock-button {
+  border-color: transparent;
+  background: transparent;
+  color: var(--lenses-dock-muted);
+  box-shadow: none;
+}
+[data-lenses-theme="dark"] .lenses-page-dock-button:hover,
+html[data-lenses-theme="dark"] .lenses-page-dock-button:hover {
+  border-color: var(--lenses-dock-line-soft);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-ink);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-button.is-active,
+html[data-lenses-theme="dark"] .lenses-page-dock-button.is-active {
+  border-color: var(--lenses-dock-accent-rule);
+  background: var(--lenses-dock-accent-soft);
+  color: var(--lenses-dock-accent-strong);
+  box-shadow: inset 0 0 0 1px var(--lenses-dock-accent-ring);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-panel,
+html[data-lenses-theme="dark"] .lenses-page-dock-panel {
+  border-color: var(--lenses-dock-line);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-ink);
+  box-shadow: 0 12px 34px var(--lenses-dock-shadow);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-toast,
+html[data-lenses-theme="dark"] .lenses-page-dock-toast {
+  border-color: var(--lenses-dock-line);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-text);
+  box-shadow: 0 10px 28px var(--lenses-dock-shadow);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-menu,
+html[data-lenses-theme="dark"] .lenses-page-dock-menu {
+  border-color: var(--lenses-dock-line);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-ink);
+  box-shadow: 0 14px 36px var(--lenses-dock-shadow);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-menu-item,
+html[data-lenses-theme="dark"] .lenses-page-dock-menu-item {
+  border-bottom-color: var(--lenses-dock-line-soft);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-menu-item:hover,
+[data-lenses-theme="dark"] .lenses-page-dock-menu-item[data-highlighted],
+html[data-lenses-theme="dark"] .lenses-page-dock-menu-item:hover,
+html[data-lenses-theme="dark"] .lenses-page-dock-menu-item[data-highlighted] {
+  background: var(--lenses-dock-paper-soft);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="success"],
+html[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="success"] {
+  color: #34d399;
+}
+[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="empty"],
+html[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="empty"] {
+  color: #fbbf24;
+}
+[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="error"],
+html[data-lenses-theme="dark"] .lenses-page-dock-toast[data-kind="error"] {
+  color: #f87171;
+}
+[data-lenses-theme="dark"] .lenses-page-dock-lens-row,
+html[data-lenses-theme="dark"] .lenses-page-dock-lens-row {
+  color: var(--lenses-dock-ink);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-lens-row:hover,
+html[data-lenses-theme="dark"] .lenses-page-dock-lens-row:hover {
+  background: var(--lenses-dock-paper-soft);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-custom textarea,
+html[data-lenses-theme="dark"] .lenses-page-dock-custom textarea {
+  border-color: var(--lenses-dock-line);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-ink);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-custom textarea::placeholder,
+html[data-lenses-theme="dark"] .lenses-page-dock-custom textarea::placeholder {
+  color: var(--lenses-dock-muted);
+}
+[data-lenses-theme="dark"] .lenses-page-dock-custom textarea:focus,
+html[data-lenses-theme="dark"] .lenses-page-dock-custom textarea:focus {
+  border-color: var(--lenses-dock-accent);
+  box-shadow: inset 0 0 0 1px var(--lenses-dock-accent-ring);
+}
+
+[data-lenses-theme="dark"] .lenses-orphaned-panel,
+html[data-lenses-theme="dark"] .lenses-orphaned-panel {
+  --lenses-orphaned-ink: #ececec;
+  --lenses-orphaned-text: #b6b6b6;
+  --lenses-orphaned-muted: #8c8c8d;
+  --lenses-orphaned-line: #424243;
+  --lenses-orphaned-line-soft: #323234;
+  --lenses-orphaned-paper: #323234;
+  --lenses-orphaned-paper-soft: #1b1b1d;
+  --lenses-orphaned-paper-warm: #2d2d2f;
+  --lenses-orphaned-accent: #7aa2f7;
+  --lenses-orphaned-accent-strong: #8aadf8;
+  --lenses-orphaned-accent-soft: #2a3140;
+  --lenses-orphaned-shadow: rgba(0, 0, 0, 0.36);
+  color-scheme: dark;
+}
+[data-lenses-theme="dark"] .lenses-orphaned-toggle,
+html[data-lenses-theme="dark"] .lenses-orphaned-toggle {
+  border-color: var(--lenses-orphaned-line);
+  background: var(--lenses-orphaned-accent-soft);
+  color: var(--lenses-orphaned-accent-strong);
+  box-shadow: 0 8px 22px var(--lenses-orphaned-shadow);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-toggle:hover,
+html[data-lenses-theme="dark"] .lenses-orphaned-toggle:hover {
+  background: var(--lenses-orphaned-paper-warm);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-list,
+html[data-lenses-theme="dark"] .lenses-orphaned-list {
+  border-color: var(--lenses-orphaned-line);
+  background: var(--lenses-orphaned-paper);
+  box-shadow: 0 12px 34px var(--lenses-orphaned-shadow);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-item:hover,
+html[data-lenses-theme="dark"] .lenses-orphaned-item:hover {
+  background: var(--lenses-orphaned-paper-soft);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-item-title,
+html[data-lenses-theme="dark"] .lenses-orphaned-item-title {
+  color: var(--lenses-orphaned-ink);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-item-snippet,
+html[data-lenses-theme="dark"] .lenses-orphaned-item-snippet {
+  color: var(--lenses-orphaned-muted);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-item-delete,
+html[data-lenses-theme="dark"] .lenses-orphaned-item-delete {
+  color: var(--lenses-orphaned-muted);
+}
+[data-lenses-theme="dark"] .lenses-orphaned-item-delete:hover,
+html[data-lenses-theme="dark"] .lenses-orphaned-item-delete:hover {
+  color: #f87171;
+}
+
+/* Citation popover (portaled to the theme scope) carries its own palette, so it
+ * needs an explicit dark flip — the chip rides --lenses-chat-* and flips already. */
+[data-lenses-theme="dark"] .citation-pop,
+html[data-lenses-theme="dark"] .citation-pop {
+  --pop-paper: #1c1c1c;
+  --pop-ink: #ececec;
+  --pop-muted: #9a9a9a;
+  --pop-line: #3a3a3a;
+  --pop-line-soft: #2c2c2c;
+  --pop-paper-soft: #262626;
+  --pop-accent: #5b8cff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}

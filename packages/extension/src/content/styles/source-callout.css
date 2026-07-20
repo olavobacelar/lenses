@@ -1,0 +1,350 @@
+.lenses-source-callout-stack {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  pointer-events: none;
+}
+
+.lenses-source-callout {
+  --lenses-callout-ink: #0d0d0d;
+  --lenses-callout-text: #424242;
+  --lenses-callout-muted: #737373;
+  --lenses-callout-line: #e6e6e6;
+  --lenses-callout-line-soft: #f2f2f2;
+  --lenses-callout-paper: #ffffff;
+  --lenses-callout-paper-soft: #ffffff;
+  --lenses-callout-paper-warm: #fbfbfb;
+  --lenses-callout-accent: #2f6df6;
+  --lenses-callout-accent-strong: #2a62dd;
+  --lenses-callout-shadow: rgba(0, 0, 0, 0.16);
+  --lenses-chat-ink: var(--lenses-callout-ink);
+  --lenses-chat-text: var(--lenses-callout-text);
+  --lenses-chat-line: var(--lenses-callout-line);
+  --lenses-chat-line-soft: var(--lenses-callout-line-soft);
+  --lenses-chat-paper-soft: var(--lenses-callout-paper-soft);
+  --lenses-chat-paper-warm: var(--lenses-callout-paper-warm);
+  --lenses-chat-accent-rule: var(--lenses-callout-line);
+  position: fixed;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  border: 1px solid var(--lenses-callout-line);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-callout-paper);
+  box-shadow: 0 10px 28px var(--lenses-callout-shadow);
+  padding: 8px 10px 9px;
+  pointer-events: auto;
+  color: var(--lenses-callout-ink);
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.lenses-source-callout-header {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 1;
+}
+
+.lenses-source-callout-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--lenses-callout-muted);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--lenses-radius-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.lenses-source-callout-close:hover {
+  background: var(--lenses-callout-paper-soft);
+  color: var(--lenses-callout-ink);
+}
+
+.lenses-source-callout-close svg {
+  width: 13px;
+  height: 13px;
+  display: block;
+}
+
+.lenses-source-callout-status {
+  margin: 0;
+  padding-right: 20px;
+  font-size: 12px;
+  color: var(--lenses-callout-text);
+}
+
+.lenses-source-callout-status.is-loading {
+  color: var(--lenses-callout-muted);
+}
+
+.lenses-source-callout-status.is-searching {
+  color: var(--lenses-callout-accent-strong);
+}
+
+.lenses-source-callout-status.is-error {
+  color: #b91c1c;
+}
+
+.lenses-source-callout-intermediate {
+  margin: 6px 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--lenses-callout-muted);
+  padding: 0;
+}
+
+.lenses-source-callout-intermediate summary {
+  cursor: pointer;
+  color: var(--lenses-callout-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  list-style: none;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.lenses-source-callout-intermediate summary:hover {
+  color: var(--lenses-callout-text);
+}
+
+.lenses-source-callout-intermediate summary::-webkit-details-marker {
+  display: none;
+}
+
+.lenses-source-callout-block-title {
+  margin: 8px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--lenses-callout-muted);
+}
+
+.lenses-source-callout-thinking-content {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--lenses-callout-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.lenses-source-callout-answer {
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--lenses-callout-ink);
+  white-space: pre-wrap;
+}
+
+.lenses-source-callout-answer p {
+  margin: 0 0 8px;
+}
+
+.lenses-source-callout-answer > :last-child {
+  margin-bottom: 0;
+}
+
+.lenses-source-callout-list {
+  margin: 0;
+  padding: 0 20px 0 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Source card ("Soft Note"): each cited source is a quiet bordered box, matching
+ * the sidepanel citation cards. Tokens carry the light/dark theme. */
+.lenses-source-callout-item {
+  border: 1px solid var(--lenses-callout-line);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-callout-paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.lenses-source-callout-item:hover {
+  border-color: var(--lenses-callout-accent);
+  background: var(--lenses-callout-paper-soft);
+}
+
+.lenses-source-callout-link {
+  display: block;
+  padding: 8px 10px;
+  border-radius: inherit;
+  text-decoration: none;
+}
+
+.lenses-source-callout-title {
+  display: block;
+  color: var(--lenses-callout-ink);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.lenses-source-callout-domain {
+  display: block;
+  font-size: 10px;
+  color: var(--lenses-callout-muted);
+  font-family: inherit;
+  margin-top: 2px;
+}
+
+/* Grouped web searches ("Searched the web") shown inside the source callout. */
+.lenses-websearch {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 8px;
+  border: 1px solid var(--lenses-callout-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-callout-paper-soft);
+  color: var(--lenses-callout-text);
+  padding: 5px 10px;
+}
+
+.lenses-websearch[open],
+.lenses-websearch.is-live {
+  background: var(--lenses-callout-paper-warm);
+}
+
+.lenses-websearch-trigger {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.lenses-websearch-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.lenses-websearch-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lenses-callout-muted);
+  min-height: 16px;
+  line-height: 1.2;
+}
+
+.lenses-websearch-trigger .lenses-websearch-summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid currentColor;
+  transition: transform 0.15s ease;
+}
+
+.lenses-websearch[open] .lenses-websearch-summary::before {
+  transform: rotate(90deg);
+}
+
+.lenses-websearch-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.75;
+}
+
+.lenses-websearch-count {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.lenses-websearch-list {
+  margin: 8px 0 2px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lenses-websearch-query-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lenses-websearch-query {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lenses-callout-ink);
+  overflow-wrap: anywhere;
+}
+
+.lenses-websearch-group.is-pending .lenses-websearch-query {
+  color: var(--lenses-callout-muted);
+}
+
+.lenses-websearch-result-count {
+  font-size: 10px;
+  color: var(--lenses-callout-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lenses-websearch-results {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lenses-websearch-result-link {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  text-decoration: none;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.lenses-websearch-result-title {
+  font-size: 11px;
+  color: var(--lenses-callout-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lenses-websearch-result-domain {
+  font-size: 10px;
+  color: var(--lenses-callout-muted);
+  flex-shrink: 0;
+}
+
+.lenses-websearch-result-link:hover .lenses-websearch-result-title {
+  color: var(--lenses-callout-accent);
+}
+

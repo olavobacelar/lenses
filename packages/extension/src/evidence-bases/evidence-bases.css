@@ -1,0 +1,1065 @@
+/* Neutral tokens shared with options.css, popup.css, and
+   sidepanel.css. Like the settings page, this surface defaults to dark
+   (matching the rest of the extension chrome); light is opt-in via
+   [data-theme="light"]. */
+:root {
+  color-scheme: dark;
+  --ink: #ececec;
+  --text: #b6b6b6;
+  --muted: #8c8c8d;
+  --faint: #6a6a6c;
+  --line: #424243;
+  --line-soft: #323234;
+  --page: #1a1a1c;
+  --sidebar: #19191b;
+  --surface: #323234;
+  --surface-hover: #464648;
+  --surface-selected: #59595a;
+  --control: #1a1a1c;
+  --accent: #7aa2f7;
+  --accent-strong: #8aadf8;
+  --accent-soft: rgba(122, 162, 247, 0.18);
+  --accent-ring: rgba(122, 162, 247, 0.32);
+  --success: #3fb950;
+  --success-soft: rgba(63, 185, 80, 0.16);
+  --warn: #d29922;
+  --warn-soft: rgba(210, 153, 34, 0.16);
+  --danger: #f85149;
+  --danger-soft: rgba(248, 81, 73, 0.14);
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.40);
+  --entry-fill: rgba(236, 236, 236, 0.06);
+  --quote-fill: rgba(236, 236, 236, 0.04);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+  --radius-btn: var(--radius-md);
+  --evidence-sidebar-width: 300px;
+  --evidence-pane-gutter: 72px;
+  --evidence-pane-right-padding: 56px;
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #0d0d0d;
+  --text: #424242;
+  --muted: #737373;
+  --faint: #959595;
+  --line: #e6e6e6;
+  --line-soft: #f2f2f2;
+  --page: #ffffff;
+  --sidebar: #f6f6f6;
+  --surface: #ffffff;
+  --surface-hover: #f7f7f7;
+  --surface-selected: #eeeeee;
+  --control: #ffffff;
+  --accent: #2f6df6;
+  --accent-strong: #2a62dd;
+  --accent-soft: rgba(47, 109, 246, 0.12);
+  --accent-ring: rgba(47, 109, 246, 0.24);
+  --success: #2da44e;
+  --success-soft: rgba(45, 164, 78, 0.14);
+  --warn: #9a6700;
+  --warn-soft: rgba(210, 153, 34, 0.14);
+  --danger: #f85149;
+  --danger-soft: rgba(248, 81, 73, 0.10);
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+  --entry-fill: rgba(255, 255, 255, 0.82);
+  --quote-fill: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+html,
+body {
+  overflow: hidden;
+  background: var(--page);
+}
+
+body {
+  color: var(--ink);
+  font-family: var(--font-system);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.14s ease,
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    color 0.14s ease;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* --- Layout: fixed sidebar column, main pane owns the scroll --- */
+
+.evidence-app {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--evidence-sidebar-width) minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--page);
+}
+
+.evidence-sidebar {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 16px 20px;
+  border-right: 1px solid var(--line-soft);
+  background: var(--sidebar);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding: 0 4px 10px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.brand-mark img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.sidebar-new-base {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.sidebar-new-base:hover,
+.sidebar-new-base:focus-visible {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.evidence-filter {
+  min-height: 36px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  color: var(--muted);
+  background: var(--control);
+}
+
+.evidence-filter:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.evidence-filter svg {
+  width: 15px;
+  height: 15px;
+}
+
+.evidence-filter input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+  font-size: 13px;
+}
+
+.evidence-filter input::placeholder {
+  color: var(--faint);
+}
+
+.evidence-list {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.evidence-list-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  color: var(--text);
+  background: var(--entry-fill);
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+}
+
+.evidence-list-item:hover,
+.evidence-list-item:focus-visible {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.evidence-list-item.is-active {
+  color: var(--ink);
+  background: var(--surface-selected);
+}
+
+.evidence-list-copy {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.evidence-list-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.evidence-list-copy span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.empty-list {
+  padding: 10px 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* --- Main pane --- */
+
+.evidence-main {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 52px var(--evidence-pane-right-padding) 64px var(--evidence-pane-gutter);
+}
+
+.evidence-main > * {
+  width: min(100%, 860px);
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 9px 10px 9px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line));
+  border-radius: var(--radius-md);
+  color: var(--danger);
+  background: var(--danger-soft);
+  font-size: 13px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.detail-heading {
+  min-width: 0;
+}
+
+.detail-heading h1 {
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 780;
+}
+
+.guiding-question {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.detail-description {
+  max-width: 640px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.icon-button:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.danger-button:hover,
+.danger-button:focus-visible {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.detail-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* --- Sources --- */
+
+.source-list {
+  padding-top: 28px;
+}
+
+.source-list h2 {
+  margin-bottom: 6px;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.source-row + .source-row {
+  border-top: 1px solid var(--line-soft);
+}
+
+.source-row-head {
+  min-height: 60px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.source-toggle,
+.run-toggle {
+  min-width: 0;
+  display: grid;
+  align-items: center;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+}
+
+.source-toggle {
+  grid-template-columns: 16px 20px minmax(0, 1fr);
+  gap: 9px;
+  padding: 11px 0;
+  border-radius: var(--radius-sm);
+}
+
+.source-toggle > svg {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+}
+
+.source-toggle:hover > svg,
+.source-toggle:focus-visible > svg,
+.run-toggle:hover > svg,
+.run-toggle:focus-visible > svg {
+  color: var(--ink);
+}
+
+.source-toggle span,
+.run-toggle span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.source-toggle strong,
+.run-toggle strong {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.source-toggle:hover strong,
+.source-toggle:focus-visible strong,
+.run-toggle:hover strong,
+.run-toggle:focus-visible strong {
+  color: var(--ink);
+}
+
+.source-toggle small,
+.run-toggle small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.source-body {
+  padding: 0 0 20px 46px;
+}
+
+/* Human summary of the captured snapshot; the raw SHA-256 checksum stays one
+   click away behind the copy control instead of being printed on the page. */
+.capture-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.copy-button {
+  width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.copy-button:hover,
+.copy-button:focus-visible {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.copy-button svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* --- Runs --- */
+
+.run-list {
+  border-left: 2px solid var(--line-soft);
+}
+
+.run-row {
+  padding: 0 0 16px 16px;
+}
+
+.run-toggle {
+  width: 100%;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 2px 0 9px;
+}
+
+.run-toggle > svg {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+
+.run-status {
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  color: var(--faint);
+  background: var(--entry-fill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.status-completed {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.status-failed,
+.status-cancelled {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.status-running,
+.status-pending {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* --- Findings --- */
+
+.finding-list {
+  display: grid;
+  margin-left: 24px;
+}
+
+.run-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0 8px;
+  padding: 8px 11px;
+  border-left: 3px solid var(--danger);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--danger);
+  background: var(--danger-soft);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.run-error.is-warn {
+  border-left-color: var(--warn);
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.run-error > svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.run-error-body {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.run-error-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.run-error-action {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.run-error-action:hover,
+.run-error-action:focus-visible {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Repeat-run fold: sits inside the run list, one indent in, quiet by default. */
+.earlier-attempts {
+  margin: 2px 0 14px;
+}
+
+.earlier-attempts-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.earlier-attempts-toggle:hover,
+.earlier-attempts-toggle:focus-visible {
+  color: var(--ink);
+  outline: none;
+}
+
+.earlier-attempts-toggle svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.earlier-attempts-list {
+  margin-top: 4px;
+  padding-left: 15px;
+  border-left: 1px dashed var(--line);
+}
+
+/* Failure-only base callout: a base whose every run failed reads as empty
+   without this. Amber — the cause is usually user-fixable (a key). */
+.base-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 11px 13px;
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
+  border-radius: var(--radius-md);
+  color: var(--warn);
+  background: var(--warn-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.base-alert > svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.base-alert strong {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+.finding-row {
+  padding: 12px 0;
+}
+
+.finding-row + .finding-row {
+  border-top: 1px solid var(--line-soft);
+}
+
+.finding-row > strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+
+.finding-row p {
+  margin-top: 5px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+blockquote {
+  margin: 8px 0 0;
+  padding: 7px 11px;
+  border-left: 3px solid var(--line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text);
+  background: var(--quote-fill);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.empty-runs,
+.empty-sources {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-state {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state > svg {
+  width: 34px;
+  height: 34px;
+}
+
+.empty-state h2 {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 740;
+}
+
+/* --- Dialogs --- */
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.dialog-content {
+  position: fixed;
+  z-index: 101;
+  top: 50%;
+  left: 50%;
+  width: min(400px, calc(100vw - 28px));
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.dialog-heading {
+  display: grid;
+  gap: 3px;
+}
+
+.dialog-head h2 {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 740;
+  line-height: 1.2;
+}
+
+/* One-line orienting subtitle under the dialog title. */
+.dialog-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.editor-form {
+  display: grid;
+  gap: 16px;
+}
+
+/* Field labels read as quiet captions, not headings, so the inputs lead. */
+.editor-form label,
+.editor-form .editor-field {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Soft filled fields: a recessed --control fill with no frame at rest; the
+   accent border + ring appear only on focus, so the form reads calm. The
+   modal sits on --surface, so --control fields read as recessed wells. */
+.editor-form input,
+.editor-form textarea,
+.editor-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  color: var(--ink);
+  background: var(--control);
+  font-size: 13px;
+  font-weight: 400;
+  outline: none;
+}
+
+/* In light mode --control equals the modal surface (#fff), so give fields a
+   faint gray fill to stay legible without a border. */
+:root[data-theme="light"] .editor-form input,
+:root[data-theme="light"] .editor-form textarea,
+:root[data-theme="light"] .editor-form select {
+  background: #f2f3f5;
+}
+
+.editor-form textarea {
+  resize: none;
+}
+
+.editor-form input:hover,
+.editor-form textarea:hover,
+.editor-form select:hover {
+  background: color-mix(in srgb, var(--ink) 5%, var(--control));
+}
+
+.editor-form input:focus,
+.editor-form textarea:focus,
+.editor-form select:focus {
+  border-color: var(--accent);
+  background: var(--control);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Buttons follow the settings page: the primary is filled accent, everything
+   else is frameless with a subtle fill for affordance. */
+.primary-button,
+.secondary-button,
+.delete-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.primary-button {
+  border-color: var(--accent);
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.primary-button:hover,
+.primary-button:focus-visible {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+
+.primary-button:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.primary-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.secondary-button {
+  border-color: var(--line);
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  border-color: var(--faint);
+  color: var(--ink);
+  background: var(--surface-selected);
+}
+
+.delete-button {
+  border-color: var(--danger);
+  color: #ffffff;
+  background: var(--danger);
+}
+
+.delete-button:hover,
+.delete-button:focus-visible {
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.primary-button:disabled,
+.delete-button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.delete-summary p {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.delete-summary dl {
+  margin: 14px 0;
+}
+
+.delete-summary dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.delete-summary dl div + div {
+  border-top: 1px solid var(--line-soft);
+}
+
+.delete-summary dt {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.delete-summary dd {
+  margin: 0;
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.delete-summary a {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.delete-summary a:hover,
+.delete-summary a:focus-visible {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* --- Narrow viewport --- */
+
+@media (max-width: 720px) {
+  html,
+  body {
+    overflow: auto;
+  }
+
+  .evidence-app {
+    height: auto;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .evidence-sidebar {
+    max-height: 42vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .evidence-main {
+    overflow: visible;
+    padding: 28px 18px 44px;
+  }
+
+  .detail-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detail-actions {
+    justify-content: flex-end;
+  }
+
+  .source-body {
+    padding-left: 20px;
+  }
+
+  .finding-list {
+    margin-left: 8px;
+  }
+}

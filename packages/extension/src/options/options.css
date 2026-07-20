@@ -1,0 +1,1671 @@
+/* Neutral tokens shared with popup.css and sidepanel.css.
+   Note: this surface defaults to dark (matching the rest of the
+   extension chrome). Light is opt-in via [data-theme="light"]. */
+:root {
+  color-scheme: dark;
+  --ink: #ececec;
+  --text: #b6b6b6;
+  --muted: #8c8c8d;
+  --faint: #6a6a6c;
+  --line: #424243;
+  --line-soft: #323234;
+  --page: #1a1a1c;
+  --sidebar: #19191b;
+  --surface: #323234;
+  --surface-hover: #464648;
+  --surface-selected: #59595a;
+  --control: #1a1a1c;
+  --control-raised: #323234;
+  --accent: #7aa2f7;
+  --accent-strong: #8aadf8;
+  --accent-soft: rgba(122, 162, 247, 0.18);
+  --accent-ring: rgba(122, 162, 247, 0.32);
+  --success: #3fb950;
+  --success-border: rgba(63, 185, 80, 0.5);
+  --danger: #f85149;
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.40);
+  --section-focus-bg: #232a38;
+  --radius: 10px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: var(--radius);
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+  --radius-card: var(--radius-lg);
+  --radius-btn: var(--radius-md);
+  --settings-sidebar-width: 300px;
+  --settings-pane-gutter: 72px;
+  --settings-pane-right-padding: 56px;
+  --settings-heading-inset: 14px;
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #0d0d0d;
+  --text: #424242;
+  --muted: #737373;
+  --faint: #959595;
+  --line: #e6e6e6;
+  --line-soft: #f2f2f2;
+  --page: #ffffff;
+  --sidebar: #f6f6f6;
+  --surface: #ffffff;
+  --surface-hover: #f7f7f7;
+  --surface-selected: #eeeeee;
+  --control: #ffffff;
+  --control-raised: #ffffff;
+  --accent: #2f6df6;
+  --accent-strong: #2a62dd;
+  --accent-soft: rgba(47, 109, 246, 0.12);
+  --accent-ring: rgba(47, 109, 246, 0.24);
+  --success: #2da44e;
+  --success-border: rgba(45, 164, 78, 0.42);
+  --danger: #f85149;
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+  --section-focus-bg: #eef3fe;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+  background: var(--page);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  height: 100%;
+  overflow: hidden;
+  color: var(--ink);
+  background: var(--page);
+  font-family: var(--font-system);
+}
+
+#root {
+  height: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea {
+  transition:
+    background-color 0.14s ease,
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    color 0.14s ease;
+}
+
+.settings-layout {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--settings-sidebar-width) minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--page);
+}
+
+/* Narrow viewport: the sidebar lives in a drawer instead of consuming a
+   fixed column, so the main pane gets the full width. */
+.settings-layout.narrow {
+  grid-template-columns: 1fr;
+}
+
+.settings-main {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.settings-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px 16px 28px;
+  border-right: 1px solid var(--line-soft);
+  background: var(--sidebar);
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding: 0 4px 22px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.brand-mark img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.settings-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.nav-item {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 4px 10px 4px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.nav-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  background: rgba(236, 236, 236, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(236, 236, 236, 0.03);
+}
+
+:root[data-theme="light"] .nav-icon {
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+.nav-icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.nav-item:hover,
+.nav-item:focus-visible {
+  background: var(--surface-hover);
+  color: var(--ink);
+  outline: none;
+}
+
+.nav-item:hover .nav-icon,
+.nav-item:focus-visible .nav-icon {
+  color: var(--ink);
+  background: rgba(236, 236, 236, 0.08);
+}
+
+:root[data-theme="light"] .nav-item:hover .nav-icon,
+:root[data-theme="light"] .nav-item:focus-visible .nav-icon {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.nav-item.active {
+  color: var(--ink);
+  border-color: rgba(122, 162, 247, 0.24);
+  background: var(--section-focus-bg);
+  box-shadow: inset 0 0 0 1px rgba(122, 162, 247, 0.08);
+}
+
+:root[data-theme="light"] .nav-item.active {
+  background: var(--section-focus-bg);
+}
+
+.nav-item.active .nav-icon {
+  color: #ffffff;
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+  box-shadow:
+    0 6px 14px rgba(47, 109, 246, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.nav-item.active .nav-icon svg {
+  color: #ffffff;
+}
+
+/* --- Sidebar: lenses section ---
+   Mirrors Obsidian Web Clipper's "Templates" panel — a prominent CTA
+   ("New lens") followed by user lenses and a muted "Built-in" group. */
+
+.sidebar-section-label {
+  margin: 24px 4px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sidebar-section-label.muted {
+  margin-top: 20px;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sidebar-new-lens {
+  width: 100%;
+  min-height: 38px;
+  margin: 0 0 12px;
+  padding: 0 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.sidebar-new-lens:hover,
+.sidebar-new-lens:focus-visible {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.sidebar-lens-error {
+  margin: 0 4px 10px;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.sidebar-lens-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0 16px;
+  margin: -6px 0 -16px;
+}
+
+.sidebar-lens-entry {
+  position: relative;
+  width: 100%;
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  background: rgba(236, 236, 236, 0.06);
+  color: var(--text);
+  cursor: pointer;
+}
+
+:root[data-theme="light"] .sidebar-lens-entry {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.sidebar-lens-entry:hover,
+.sidebar-lens-entry:focus-within {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.sidebar-lens-entry.active {
+  background: var(--surface-selected);
+  color: var(--ink);
+}
+
+:root[data-theme="light"] .sidebar-lens-entry.active {
+  background: var(--surface-selected);
+}
+
+.sidebar-lens-entry.dragging {
+  opacity: 0.56;
+}
+
+.sidebar-lens-entry.drop-before::before,
+.sidebar-lens-entry.drop-after::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  right: 8px;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.sidebar-lens-entry.drop-before::before {
+  top: -4px;
+}
+
+.sidebar-lens-entry.drop-after::after {
+  bottom: -4px;
+}
+
+.sidebar-lens-handle {
+  width: 14px;
+  height: 22px;
+  color: var(--faint);
+  cursor: grab;
+  opacity: 0.72;
+  background-image: radial-gradient(currentColor 1.2px, transparent 1.3px);
+  background-position: 0 2px;
+  background-size: 6px 6px;
+}
+
+.sidebar-lens-entry:active .sidebar-lens-handle {
+  cursor: grabbing;
+}
+
+.sidebar-lens-entry .sidebar-lens-row {
+  min-width: 0;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sidebar-lens-entry .sidebar-lens-row:hover,
+.sidebar-lens-entry .sidebar-lens-row:focus-visible,
+.sidebar-lens-entry .sidebar-lens-row.active {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.sidebar-lens-link {
+  min-width: 0;
+}
+
+.sidebar-lens-delete {
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--faint);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    background-color 0.14s ease,
+    color 0.14s ease,
+    opacity 0.14s ease;
+}
+
+.sidebar-lens-delete svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sidebar-lens-entry:hover .sidebar-lens-delete,
+.sidebar-lens-entry:focus-within .sidebar-lens-delete,
+.sidebar-lens-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-lens-delete:hover,
+.sidebar-lens-delete:focus-visible {
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.10);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.sidebar-lens-row {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  background: rgba(236, 236, 236, 0.06);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+:root[data-theme="light"] .sidebar-lens-row {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.sidebar-lens-row:hover,
+.sidebar-lens-row:focus-visible {
+  background: var(--surface-hover);
+  color: var(--ink);
+  outline: none;
+}
+
+.sidebar-lens-row.active {
+  background: var(--surface-selected);
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--ink);
+}
+
+:root[data-theme="light"] .sidebar-lens-row.active {
+  background: var(--surface-selected);
+}
+
+.sidebar-lens-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-lens-badge {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sidebar-lens-badge.muted {
+  background: var(--control);
+  color: var(--faint);
+}
+
+.options-shell {
+  width: min(100%, 840px);
+  padding: 52px var(--settings-pane-right-padding) 52px var(--settings-pane-gutter);
+}
+
+.page-header {
+  margin-bottom: 32px;
+  padding: 0 var(--settings-heading-inset);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  color: var(--ink);
+  font-size: 34px;
+  line-height: 1.12;
+  font-weight: 780;
+}
+
+.settings-form {
+  display: grid;
+  gap: 30px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 18px;
+}
+
+.settings-card {
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 0 var(--settings-heading-inset);
+}
+
+h2 {
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.22;
+  font-weight: 740;
+}
+
+.setting-row {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  align-items: start;
+  gap: 22px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.settings-card > .setting-row:first-child {
+  border-top: 0;
+}
+
+.setting-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.setting-title {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.setting-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  vertical-align: middle;
+}
+
+.setting-description {
+  max-width: 430px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+input[type="password"],
+.select-trigger,
+textarea {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--control);
+  outline: none;
+}
+
+textarea {
+  min-height: 96px;
+  padding: 10px 12px;
+  resize: none;
+  line-height: 1.4;
+}
+
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 10px 0 12px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: var(--faint);
+}
+
+input[type="password"]:hover,
+.select-trigger:hover,
+textarea:hover {
+  border-color: var(--faint);
+}
+
+input[type="password"]:focus,
+.select-trigger:focus-visible,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.select-trigger[data-disabled],
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.select-icon {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: inline-grid;
+  place-items: center;
+  color: var(--muted);
+  transition:
+    color 0.14s ease,
+    transform 0.14s ease;
+}
+
+.select-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.select-trigger[data-state="open"] .select-icon {
+  color: var(--ink);
+  transform: rotate(180deg);
+}
+
+.select-content {
+  z-index: 50;
+  min-width: var(--radix-select-trigger-width);
+  max-height: min(var(--radix-select-content-available-height), 320px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--section-focus-bg);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.select-viewport {
+  padding: 5px;
+}
+
+.select-item {
+  position: relative;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 30px 0 11px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-item[data-highlighted] {
+  background: var(--surface-hover);
+  color: var(--ink);
+  outline: none;
+}
+
+.select-item[data-state="checked"] {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.select-item-indicator {
+  position: absolute;
+  right: 8px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.select-item-indicator svg {
+  width: 13px;
+  height: 13px;
+}
+
+.setting-row-stack {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+}
+
+.domain-list-textarea {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-size: 13px;
+}
+
+.domain-style-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.domain-style-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Domain input grows; the style picker and remove button hug their content. */
+.domain-style-rule {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.domain-style-rule-domain {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  background: var(--control);
+  color: var(--text);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-size: 13px;
+}
+
+.domain-style-rule-domain:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.domain-style-rule-remove {
+  width: 38px;
+  padding: 0;
+  color: var(--faint);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.domain-style-rule-remove:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.domain-style-add {
+  width: fit-content;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.domain-style-rule-domain:disabled,
+.domain-style-rule-remove:disabled,
+.domain-style-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.provider-link {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.provider-link:hover,
+.provider-link:focus-visible {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  outline: none;
+}
+
+.toggle-row {
+  cursor: pointer;
+}
+
+/* Inline-flex wrapper so it hugs the track button and sits at the cell's end.
+   The track button below carries its own width/height — a plain inline <span>
+   would swallow them. */
+.switch-control {
+  justify-self: end;
+  display: inline-flex;
+}
+
+/* Mirrors the popup (.toggle-switch) and sidepanel (.bay-switch): the Radix
+   <button> is the sized track itself, and the track centers the thumb.
+   `min-height` is required to cancel the generic `button { min-height: 38px }`
+   rule below — without it the button floors at 38px and renders as a tall
+   oval instead of a 34×20 pill. */
+.switch-track {
+  appearance: none;
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-items: start;
+  width: 34px;
+  height: 20px;
+  min-height: 20px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--line);
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.16s ease;
+}
+
+.switch-thumb {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-round);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.18);
+  /* Off-rest sits 3px from the left edge; checked slides to 3px from the right
+     (34 − 14 − 3 = 17). Vertical centering is handled by the track grid. */
+  transform: translateX(3px);
+  transition: transform 0.16s ease;
+}
+
+.switch-track[data-state="checked"] {
+  background: var(--accent-strong);
+}
+
+.switch-track[data-state="checked"] .switch-thumb {
+  transform: translateX(17px);
+}
+
+/* Scoped past the generic `button:hover/:focus-visible` chrome (0-2-1 beats
+   0-1-1) so the toggle shows only its own focus outline — no stray accent ring
+   on hover. */
+.switch-control .switch-track:hover {
+  box-shadow: none;
+}
+
+.switch-control .switch-track:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 24px 22px;
+}
+
+/* Buttons are frameless: a subtle fill (not a border) gives the affordance, so
+   nothing reads as boxed at rest. The fill steps off the page bg in both themes,
+   and deepens on hover; the focus ring is kept for keyboard a11y. */
+button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  color: var(--text);
+  background: var(--surface-hover);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+}
+
+button:hover {
+  color: var(--ink);
+  background: var(--surface-selected);
+}
+
+button:focus-visible {
+  color: var(--ink);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+button.select-trigger {
+  min-height: 40px;
+  color: var(--ink);
+  background: var(--section-focus-bg);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+button.select-trigger:hover {
+  color: var(--ink);
+  border-color: var(--muted);
+  background: var(--section-focus-bg);
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+button.select-trigger:focus-visible,
+button.select-trigger[data-state="open"] {
+  color: var(--ink);
+  border-color: var(--accent-strong);
+  background: var(--section-focus-bg);
+  box-shadow:
+    0 0 0 2px var(--accent-ring),
+    0 2px 5px rgba(0, 0, 0, 0.20);
+}
+
+button.select-trigger[data-disabled] {
+  background: var(--section-focus-bg);
+  box-shadow: none;
+}
+
+.primary {
+  min-width: 112px;
+  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.primary:hover,
+.primary:focus-visible {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+
+/* Auto-save confirmation. Fixed to the viewport so it stays visible no matter
+   where the user is in the (scrolling) form — the old in-footer status was off
+   screen whenever a control near the top changed. */
+.save-indicator {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  pointer-events: none;
+}
+
+.save-indicator::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-round);
+  background: var(--accent);
+}
+
+.save-indicator.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.save-indicator.success {
+  border-color: var(--success-border);
+}
+
+.save-indicator.success::after {
+  background: var(--success);
+}
+
+.save-indicator.error {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.save-indicator.error::after {
+  background: var(--danger);
+}
+
+/* --- Lens editor (detail-only; the master list lives in the global sidebar) --- */
+
+.lens-editor {
+  display: block;
+  min-width: 0;
+}
+
+.lens-detail {
+  min-width: 0;
+  padding: 0 var(--settings-pane-right-padding) 64px var(--settings-pane-gutter);
+}
+
+.lens-detail-error {
+  margin: 0 0 16px;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.lens-detail-empty {
+  padding: 80px 0;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* The header stays pinned while the long, sectioned form scrolls beneath it, so
+   Save/Export are always reachable. Negative side margins cancel the pane's
+   horizontal padding so the bar (and its divider) bleeds to the pane edges,
+   then the same padding is re-applied inside so the title aligns with the body. */
+.lens-form-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0
+    calc(-1 * var(--settings-pane-right-padding))
+    8px
+    calc(-1 * var(--settings-pane-gutter));
+  padding: 26px var(--settings-pane-right-padding) 16px var(--settings-pane-gutter);
+  background: var(--page);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.lens-form-head h1 {
+  margin: 3px 0 0;
+  font-size: 26px;
+  font-weight: 640;
+  letter-spacing: -0.01em;
+}
+
+.lens-form-sub {
+  margin: 5px 0 0;
+  color: var(--faint);
+  font-size: 12.5px;
+}
+
+.lens-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.lens-form-actions .ghost {
+  background: transparent;
+}
+
+.lens-form-actions .danger {
+  color: var(--danger);
+  border-color: transparent;
+  background: transparent;
+}
+
+.lens-form-actions .danger:hover {
+  border-color: var(--danger);
+  box-shadow: none;
+}
+
+.lens-notice {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Each section pairs a left "label rail" (title + one-line description) with a
+   right column of fields — the shape system settings panels use. It gives the
+   long form skimmable chapters instead of one undifferentiated wall of inputs. */
+.lens-form-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.lens-section {
+  display: grid;
+  grid-template-columns: 214px minmax(0, 1fr);
+  gap: 44px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.lens-section:first-child {
+  border-top: 0;
+  padding-top: 24px;
+}
+
+.lens-section-head h2 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 640;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+
+.lens-section-head p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--faint);
+}
+
+.lens-section-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  max-width: 560px;
+}
+
+/* Two short controls sitting side by side (e.g. Run mode + Output kind). */
+.lens-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.lens-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lens-field-label {
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 550;
+}
+
+.lens-field-hint {
+  color: var(--faint);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.lens-field input[type="text"],
+.lens-field .select-trigger,
+.lens-field textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  background: var(--control);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.lens-field .select-trigger {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.lens-field textarea {
+  resize: none;
+}
+
+/* The name reads as the lens's title, so it gets a larger, heavier input. */
+.lens-field input[type="text"].lens-name-input {
+  padding: 11px 13px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.lens-field textarea.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.lens-field input:focus,
+.lens-field .select-trigger:focus,
+.lens-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.lens-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 2px;
+}
+
+/* Scope reuses the accessible Radix checkboxes but presents each as a pill, so
+   picking what a lens may read reads as a set of toggles rather than a list. */
+.lens-scope {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.lens-scope .lens-check {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--control);
+  font-weight: 550;
+}
+
+.lens-scope .lens-check:has(.lens-checkbox[data-state="checked"]) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.lens-check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.lens-checkbox {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  background: var(--control);
+  color: #ffffff;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.lens-checkbox[data-state="checked"] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.lens-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.lens-checkbox svg {
+  display: block;
+}
+
+.lens-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lens-category-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.3fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.lens-category-remove {
+  min-height: 30px;
+  min-width: 30px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.lens-category-add {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.lens-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lens-color input[type="color"] {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-btn);
+  background: transparent;
+  cursor: pointer;
+}
+
+.lens-color.compact input[type="color"] {
+  width: 30px;
+  height: 30px;
+}
+
+.lens-color input[type="text"] {
+  width: 96px;
+}
+
+.lens-form-foot {
+  margin-top: 22px;
+}
+
+.lens-errors {
+  margin: 0 0 10px;
+  padding: 12px 14px 12px 30px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-card);
+  background: rgba(251, 113, 133, 0.08);
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.lens-status {
+  margin: 0;
+  color: var(--success);
+  font-size: 13px;
+}
+
+.lens-status.error {
+  color: var(--danger);
+}
+
+/* Advanced holds the power-user knobs (URL triggers, tools, model override,
+   fallback colour, version, visibility) that most lenses never touch, collapsed
+   by default so the essential authoring path stays short. */
+.lens-advanced {
+  border-top: 1px solid var(--line-soft);
+}
+
+.lens-advanced-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 22px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14.5px;
+  font-weight: 640;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lens-advanced-toggle:hover {
+  color: var(--accent-strong);
+}
+
+.lens-advanced-toggle small {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.lens-advanced-chevron {
+  flex: 0 0 auto;
+  opacity: 0.6;
+  transition: transform 0.18s ease;
+}
+
+.lens-advanced[data-open="true"] .lens-advanced-chevron {
+  transform: rotate(90deg);
+}
+
+.lens-advanced-body {
+  display: grid;
+  grid-template-columns: 214px minmax(0, 1fr);
+  gap: 44px;
+  padding: 0 0 12px;
+}
+
+.lens-advanced-body .lens-section-head p {
+  margin-top: 2px;
+}
+
+/* --- Narrow viewport: header + drawer ---
+   Instead of squeezing every nav entry (including a growing list of lenses)
+   into a tab strip, we hide the sidebar and surface a "More" button in the
+   page header that opens it as an overlay drawer. */
+
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--sidebar);
+}
+
+.mobile-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.mobile-header-more {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.mobile-header-more svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.mobile-header-more:hover,
+.mobile-header-more:focus-visible {
+  background: var(--surface-hover);
+  color: var(--ink);
+  outline: none;
+}
+
+.mobile-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  animation: drawer-fade 0.16s ease;
+}
+
+.mobile-drawer {
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--surface);
+}
+
+.mobile-drawer-header {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.mobile-drawer-close {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.mobile-drawer-close svg {
+  width: 28px;
+  height: 28px;
+}
+
+.mobile-drawer-close:hover,
+.mobile-drawer-close:focus-visible {
+  background: var(--surface-hover);
+  color: var(--ink);
+  outline: none;
+}
+
+/* The sidebar inside the drawer keeps its own padding; reset the
+   sticky positioning so it scrolls with the drawer rather than the page. */
+.mobile-drawer .settings-sidebar {
+  position: static;
+  height: auto;
+  min-height: calc(100vh - 64px);
+  padding: 28px 24px 40px;
+  border-right: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.mobile-drawer .sidebar-brand {
+  display: none;
+}
+
+@keyframes drawer-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* On narrow screens the detail pane no longer needs a wide left margin —
+   the sidebar is gone except when summoned via the drawer. */
+.settings-layout.narrow .options-shell,
+.settings-layout.narrow .lens-detail {
+  padding: 28px 18px 44px;
+}
+
+.settings-layout.narrow h1 {
+  font-size: 28px;
+}
+
+.settings-layout.narrow .page-header {
+  padding: 0 10px;
+}
+
+.settings-layout.narrow .lens-section,
+.settings-layout.narrow .lens-advanced-body {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.settings-layout.narrow .lens-form-head {
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0 -18px 8px;
+  padding: 20px 18px 14px;
+}
+
+.settings-layout.narrow .lens-form-actions {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.settings-layout.narrow .setting-row {
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px 18px;
+}
+
+.settings-layout.narrow .settings-section {
+  gap: 16px;
+}
+
+.settings-layout.narrow .card-head {
+  padding: 0 10px;
+}
+
+.settings-layout.narrow .card-actions {
+  padding: 0 18px 18px;
+}
+
+.settings-layout.narrow h2 {
+  font-size: 18px;
+}
+
+.settings-layout.narrow .switch-control {
+  justify-self: start;
+}
+
+/* Below ~1080px the label-rail + fields split is tight even on the wide layout,
+   so stack each section's rail above its fields before the breakpoint kicks in. */
+@media (max-width: 1080px) {
+  .lens-section,
+  .lens-advanced-body {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}

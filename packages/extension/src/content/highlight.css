@@ -1,0 +1,13 @@
+/* Source entry for the injected content-script stylesheet.
+   Build inlines these imports into dist/content/highlight.css because Chrome
+   injects a single CSS file from the extension manifest and scripting APIs. */
+
+@import "./styles/base.css";
+@import "./styles/highlights.css";
+@import "./styles/source-callout.css";
+@import "./styles/chatbox.css";
+@import "./styles/selection-trigger.css";
+@import "./styles/page-dock.css";
+@import "./styles/saved-highlights.css";
+@import "./styles/orphaned-panel.css";
+@import "./styles/dark-theme.css";

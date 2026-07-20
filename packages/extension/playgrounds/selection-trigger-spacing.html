@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Selection trigger spacing playground</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --page-bg: #d5dee9;
+        --ink: #f5f1e7;
+        --text: #d2cdbf;
+        --muted: #9c9588;
+        --line: #3a352d;
+        --line-soft: #2e2a23;
+        --paper: #25221d;
+        --paper-soft: #1a1814;
+        --paper-warm: #2c2924;
+        --accent: #d97e60;
+        --accent-ring: rgba(217, 126, 96, 0.28);
+        --shadow: rgba(0, 0, 0, 0.36);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #121416;
+        color: var(--ink);
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 380px;
+        gap: 0;
+      }
+
+      .stage {
+        min-width: 0;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        overflow: auto;
+        background:
+          linear-gradient(90deg, rgba(59, 130, 246, 0.28), rgba(59, 130, 246, 0.28)) 0 53% / 100% 22% no-repeat,
+          var(--page-bg);
+      }
+
+      .page-copy {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        color: rgba(17, 24, 39, 0.94);
+        font-size: clamp(44px, 7vw, 112px);
+        line-height: 1.18;
+        font-weight: 600;
+        letter-spacing: 0;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .page-copy span {
+        display: block;
+        width: 130vw;
+        transform: translate(-9vw, -2vh);
+      }
+
+      .preview-wrap {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-width: 760px;
+        min-height: 520px;
+        isolation: isolate;
+      }
+
+      .preview-scale {
+        position: relative;
+        z-index: 1;
+        transform: scale(var(--preview-scale));
+        transform-origin: center;
+      }
+
+      .lenses-selection-trigger {
+        --panel-width: 232px;
+        --panel-padding: 5px;
+        --panel-gap: 3px;
+        --panel-radius: 10px;
+        --row-height: 34px;
+        --row-pad-x: 10px;
+        --row-pad-y: 7px;
+        --row-gap: 10px;
+        --row-radius: 8px;
+        --icon-column: 20px;
+        --icon-size: 16px;
+        --label-gap: 10px;
+        --label-size: 12.5px;
+        --label-weight: 600;
+        --key-size: 18px;
+        --key-pad-x: 4px;
+        --key-font-size: 10.5px;
+        width: min(var(--panel-width), calc(100vw - 16px));
+        box-sizing: border-box;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: var(--panel-padding);
+        border-radius: var(--panel-radius);
+        box-shadow: 0 12px 34px var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: var(--panel-gap);
+        user-select: none;
+        color-scheme: dark;
+      }
+
+      .lenses-selection-trigger-action {
+        appearance: none;
+        width: 100%;
+        min-height: var(--row-height);
+        box-sizing: border-box;
+        border: 1px solid transparent;
+        border-radius: var(--row-radius);
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--row-gap);
+        padding: var(--row-pad-y) var(--row-pad-x);
+        font: inherit;
+        font-size: var(--label-size);
+        line-height: 1.25;
+        text-align: left;
+      }
+
+      .lenses-selection-trigger-action.is-active,
+      .lenses-selection-trigger-action:hover {
+        border-color: var(--line-soft);
+        background: var(--paper-soft);
+      }
+
+      .lenses-selection-trigger-action-main {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: var(--icon-column) minmax(0, 1fr);
+        align-items: center;
+        column-gap: var(--label-gap);
+      }
+
+      .lenses-selection-trigger-icon {
+        width: var(--icon-size);
+        height: var(--icon-size);
+        flex: 0 0 auto;
+        justify-self: center;
+        color: var(--muted);
+      }
+
+      .lenses-selection-trigger-action.is-active .lenses-selection-trigger-icon,
+      .lenses-selection-trigger-action:hover .lenses-selection-trigger-icon {
+        color: var(--accent);
+      }
+
+      .lenses-selection-trigger-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: var(--label-weight);
+      }
+
+      .lenses-selection-trigger-key {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--key-size);
+        height: var(--key-size);
+        padding: 0 var(--key-pad-x);
+        box-sizing: border-box;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--muted);
+        background: var(--paper-soft);
+        font-family: inherit;
+        font-size: var(--key-font-size);
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+      }
+
+      .lenses-selection-trigger.hide-keys .lenses-selection-trigger-key {
+        display: none;
+      }
+
+      .control-panel {
+        height: 100vh;
+        padding: 18px;
+        overflow: auto;
+        border-left: 1px solid #2a2d31;
+        background: #181a1d;
+      }
+
+      .panel-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      .panel-note {
+        margin: 0;
+        color: #a5acb8;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .preset-row,
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 14px 0;
+      }
+
+      .preset,
+      .copy-button {
+        appearance: none;
+        border: 1px solid #343942;
+        border-radius: 7px;
+        background: #202329;
+        color: #e7eaf0;
+        min-height: 32px;
+        padding: 0 10px;
+        cursor: pointer;
+      }
+
+      .preset:hover,
+      .copy-button:hover {
+        border-color: #4b5563;
+        background: #252a32;
+      }
+
+      .preset.is-selected {
+        border-color: #d97e60;
+        background: #2a211d;
+        color: #fff3eb;
+      }
+
+      .control-group {
+        display: grid;
+        gap: 9px;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #2a2d31;
+      }
+
+      .group-title {
+        margin: 0;
+        color: #d4d8df;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .control {
+        display: grid;
+        grid-template-columns: 106px minmax(0, 1fr) 58px;
+        gap: 8px;
+        align-items: center;
+        min-height: 30px;
+      }
+
+      .control label {
+        color: #c0c6d0;
+        font-size: 12px;
+      }
+
+      .control input[type="range"] {
+        width: 100%;
+        accent-color: #d97e60;
+      }
+
+      .control input[type="number"] {
+        width: 58px;
+        height: 28px;
+        padding: 0 6px;
+        border: 1px solid #343942;
+        border-radius: 6px;
+        background: #111316;
+        color: #eef1f5;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 30px;
+        color: #c0c6d0;
+        font-size: 12px;
+      }
+
+      .toggle input {
+        width: 16px;
+        height: 16px;
+        accent-color: #d97e60;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .metric {
+        border: 1px solid #2a2d31;
+        border-radius: 8px;
+        padding: 8px;
+        background: #141619;
+      }
+
+      .metric-label {
+        display: block;
+        color: #8f98a7;
+        font-size: 11px;
+      }
+
+      .metric-value {
+        display: block;
+        margin-top: 2px;
+        color: #eef1f5;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .snippet {
+        width: 100%;
+        min-height: 220px;
+        resize: vertical;
+        border: 1px solid #2a2d31;
+        border-radius: 8px;
+        background: #0f1114;
+        color: #d5d9e0;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .control-panel {
+          height: auto;
+          border-left: 0;
+          border-top: 1px solid #2a2d31;
+        }
+
+        .preview-wrap {
+          min-width: 620px;
+          min-height: 460px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="stage" aria-label="Selection trigger preview">
+        <div class="page-copy" aria-hidden="true">
+          <span>for much of this period 4</span>
+          <span>people selected a passage</span>
+          <span>and opened Lenses</span>
+          <span>inside the current page</span>
+        </div>
+
+        <div class="preview-wrap">
+          <div class="preview-scale" id="previewScaler">
+            <div class="lenses-selection-trigger" id="selectionTrigger" data-state="ready">
+              <button type="button" class="lenses-selection-trigger-action is-active">
+                <span class="lenses-selection-trigger-action-main">
+                  <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4.5 2.75h7v10.5h-7z"></path>
+                    <path d="M6.25 5.25h3.5M6.25 8h3.5M6.25 10.75h2"></path>
+                  </svg>
+                  <span class="lenses-selection-trigger-label">Summarize this</span>
+                </span>
+                <kbd class="lenses-selection-trigger-key">S</kbd>
+              </button>
+
+              <button type="button" class="lenses-selection-trigger-action">
+                <span class="lenses-selection-trigger-action-main">
+                  <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="8" cy="8" r="5.2"></circle>
+                    <path d="M5.5 8.2 7.2 10 10.8 5.8"></path>
+                  </svg>
+                  <span class="lenses-selection-trigger-label">Is this true?</span>
+                </span>
+                <kbd class="lenses-selection-trigger-key">T</kbd>
+              </button>
+
+              <button type="button" class="lenses-selection-trigger-action">
+                <span class="lenses-selection-trigger-action-main">
+                  <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 4.2h10v6.4H7.2L4.4 13v-2.4H3z"></path>
+                  </svg>
+                  <span class="lenses-selection-trigger-label">Explain this</span>
+                </span>
+                <kbd class="lenses-selection-trigger-key">E</kbd>
+              </button>
+
+              <button type="button" class="lenses-selection-trigger-action">
+                <span class="lenses-selection-trigger-action-main">
+                  <svg class="lenses-selection-trigger-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4"></circle>
+                    <path d="m10.2 10.2 3 3"></path>
+                  </svg>
+                  <span class="lenses-selection-trigger-label">Ask</span>
+                </span>
+                <kbd class="lenses-selection-trigger-key">A</kbd>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="control-panel" aria-label="Spacing controls">
+        <div class="panel-head">
+          <h1>Selection spacing</h1>
+          <p class="panel-note">Tune the dark selection trigger and copy the generated CSS back into <code>highlight.css</code>.</p>
+        </div>
+
+        <div class="preset-row" id="presets"></div>
+
+        <section class="control-group" id="layoutControls">
+          <p class="group-title">Layout</p>
+        </section>
+
+        <section class="control-group" id="rowControls">
+          <p class="group-title">Rows</p>
+        </section>
+
+        <section class="control-group" id="typeControls">
+          <p class="group-title">Type and keys</p>
+        </section>
+
+        <section class="control-group">
+          <p class="group-title">Preview</p>
+          <label class="toggle">
+            <input type="checkbox" id="showKeys" checked />
+            Show key hints
+          </label>
+        </section>
+
+        <section class="control-group">
+          <p class="group-title">Metrics</p>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label">Icon vs row midpoint</span>
+              <span class="metric-value" id="rowDelta">0 px</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Icon vs panel midpoint</span>
+              <span class="metric-value" id="panelDelta">0 px</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Label start</span>
+              <span class="metric-value" id="labelStart">0 px</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Row height</span>
+              <span class="metric-value" id="rowHeightMetric">0 px</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <p class="group-title">CSS</p>
+          <div class="action-row">
+            <button type="button" class="copy-button" id="copyCss">Copy CSS</button>
+            <button type="button" class="copy-button" id="resetCurrent">Reset current</button>
+          </div>
+          <textarea class="snippet" id="cssOutput" spellcheck="false" readonly></textarea>
+        </section>
+      </aside>
+    </main>
+
+    <script>
+      const trigger = document.getElementById("selectionTrigger");
+      const previewScaler = document.getElementById("previewScaler");
+      const cssOutput = document.getElementById("cssOutput");
+      const showKeys = document.getElementById("showKeys");
+
+      const controls = [
+        { id: "previewZoom", label: "Zoom", group: "layoutControls", cssVar: "--preview-scale", min: 1, max: 5, step: 0.1, unit: "", value: 3.7, target: "preview" },
+        { id: "panelWidth", label: "Panel width", group: "layoutControls", cssVar: "--panel-width", min: 180, max: 360, step: 1, unit: "px", value: 232 },
+        { id: "panelPadding", label: "Panel inset", group: "layoutControls", cssVar: "--panel-padding", min: 0, max: 18, step: 1, unit: "px", value: 5 },
+        { id: "panelGap", label: "Row gap", group: "layoutControls", cssVar: "--panel-gap", min: 0, max: 14, step: 1, unit: "px", value: 3 },
+        { id: "panelRadius", label: "Panel radius", group: "layoutControls", cssVar: "--panel-radius", min: 4, max: 22, step: 1, unit: "px", value: 10 },
+        { id: "rowHeight", label: "Row height", group: "rowControls", cssVar: "--row-height", min: 24, max: 58, step: 1, unit: "px", value: 34 },
+        { id: "rowPadX", label: "Row x inset", group: "rowControls", cssVar: "--row-pad-x", min: 0, max: 28, step: 1, unit: "px", value: 10 },
+        { id: "rowPadY", label: "Row y inset", group: "rowControls", cssVar: "--row-pad-y", min: 0, max: 20, step: 1, unit: "px", value: 7 },
+        { id: "rowContentGap", label: "Key gap", group: "rowControls", cssVar: "--row-gap", min: 0, max: 26, step: 1, unit: "px", value: 10 },
+        { id: "rowRadius", label: "Row radius", group: "rowControls", cssVar: "--row-radius", min: 0, max: 18, step: 1, unit: "px", value: 8 },
+        { id: "iconColumn", label: "Icon column", group: "rowControls", cssVar: "--icon-column", min: 12, max: 42, step: 1, unit: "px", value: 20 },
+        { id: "iconSize", label: "Icon size", group: "rowControls", cssVar: "--icon-size", min: 10, max: 28, step: 1, unit: "px", value: 16 },
+        { id: "labelGap", label: "Label gap", group: "rowControls", cssVar: "--label-gap", min: 0, max: 34, step: 1, unit: "px", value: 10 },
+        { id: "labelSize", label: "Label size", group: "typeControls", cssVar: "--label-size", min: 10, max: 18, step: 0.5, unit: "px", value: 12.5 },
+        { id: "labelWeight", label: "Label weight", group: "typeControls", cssVar: "--label-weight", min: 400, max: 800, step: 50, unit: "", value: 600 },
+        { id: "keySize", label: "Key size", group: "typeControls", cssVar: "--key-size", min: 12, max: 30, step: 1, unit: "px", value: 18 },
+        { id: "keyPadX", label: "Key x pad", group: "typeControls", cssVar: "--key-pad-x", min: 0, max: 10, step: 1, unit: "px", value: 4 },
+        { id: "keyFontSize", label: "Key text", group: "typeControls", cssVar: "--key-font-size", min: 8, max: 15, step: 0.5, unit: "px", value: 10.5 },
+      ];
+
+      const presets = {
+        "Current CSS": {},
+        "Panel centered": {
+          panelPadding: 4,
+          rowPadX: 6,
+          labelGap: 10,
+          iconColumn: 20,
+        },
+        "Tighter left": {
+          panelPadding: 4,
+          rowPadX: 5,
+          labelGap: 9,
+          iconColumn: 19,
+        },
+        "Roomy rows": {
+          panelPadding: 6,
+          rowPadX: 12,
+          rowPadY: 8,
+          rowHeight: 38,
+          panelGap: 4,
+          labelGap: 12,
+        },
+        "Compact": {
+          panelPadding: 4,
+          rowPadX: 8,
+          rowPadY: 5,
+          rowHeight: 30,
+          panelGap: 2,
+          iconColumn: 18,
+          iconSize: 15,
+          labelGap: 8,
+        },
+      };
+
+      const state = Object.fromEntries(controls.map((control) => [control.id, control.value]));
+      const controlInputs = new Map();
+
+      function buildControl(control) {
+        const row = document.createElement("div");
+        row.className = "control";
+
+        const label = document.createElement("label");
+        label.htmlFor = control.id;
+        label.textContent = control.label;
+
+        const range = document.createElement("input");
+        range.type = "range";
+        range.id = control.id;
+        range.min = control.min;
+        range.max = control.max;
+        range.step = control.step;
+        range.value = control.value;
+
+        const number = document.createElement("input");
+        number.type = "number";
+        number.min = control.min;
+        number.max = control.max;
+        number.step = control.step;
+        number.value = control.value;
+        number.setAttribute("aria-label", control.label + " value");
+
+        function setValue(value) {
+          state[control.id] = Number(value);
+          range.value = value;
+          number.value = value;
+          document.querySelectorAll(".preset").forEach((preset) => preset.classList.remove("is-selected"));
+          applyState();
+        }
+
+        range.addEventListener("input", () => setValue(range.value));
+        number.addEventListener("input", () => setValue(number.value));
+
+        row.append(label, range, number);
+        document.getElementById(control.group).append(row);
+        controlInputs.set(control.id, { range, number });
+      }
+
+      function buildPresets() {
+        const presetRow = document.getElementById("presets");
+        Object.entries(presets).forEach(([name, values]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "preset";
+          button.textContent = name;
+          button.addEventListener("click", () => {
+            controls.forEach((control) => {
+              state[control.id] = values[control.id] ?? control.value;
+              const inputs = controlInputs.get(control.id);
+              inputs.range.value = state[control.id];
+              inputs.number.value = state[control.id];
+            });
+            document.querySelectorAll(".preset").forEach((preset) => {
+              preset.classList.toggle("is-selected", preset === button);
+            });
+            applyState();
+          });
+          presetRow.append(button);
+        });
+        presetRow.querySelector(".preset")?.classList.add("is-selected");
+      }
+
+      function applyState() {
+        controls.forEach((control) => {
+          const value = state[control.id] + control.unit;
+          if (control.target === "preview") {
+            previewScaler.style.setProperty(control.cssVar, value);
+          } else {
+            trigger.style.setProperty(control.cssVar, value);
+          }
+        });
+        trigger.classList.toggle("hide-keys", !showKeys.checked);
+        updateMetrics();
+        updateCss();
+      }
+
+      function signedPixels(value) {
+        const rounded = Math.round(value * 10) / 10;
+        return `${rounded > 0 ? "+" : ""}${rounded} px`;
+      }
+
+      function updateMetrics() {
+        const panel = trigger.getBoundingClientRect();
+        const row = trigger.querySelector(".lenses-selection-trigger-action").getBoundingClientRect();
+        const icon = trigger.querySelector(".lenses-selection-trigger-icon").getBoundingClientRect();
+        const label = trigger.querySelector(".lenses-selection-trigger-label").getBoundingClientRect();
+
+        const iconCenter = icon.left + icon.width / 2;
+        const rowMidpointToLabel = row.left + (label.left - row.left) / 2;
+        const panelMidpointToLabel = panel.left + (label.left - panel.left) / 2;
+        const scale = state.previewZoom || 1;
+
+        document.getElementById("rowDelta").textContent = signedPixels((iconCenter - rowMidpointToLabel) / scale);
+        document.getElementById("panelDelta").textContent = signedPixels((iconCenter - panelMidpointToLabel) / scale);
+        document.getElementById("labelStart").textContent = `${Math.round((label.left - panel.left) / scale)} px`;
+        document.getElementById("rowHeightMetric").textContent = `${Math.round(row.height / scale)} px`;
+      }
+
+      function valueWithUnit(id) {
+        const control = controls.find((item) => item.id === id);
+        return state[id] + control.unit;
+      }
+
+      function updateCss() {
+        cssOutput.value = `.lenses-selection-trigger {
+  width: min(${valueWithUnit("panelWidth")}, calc(100vw - 16px));
+  padding: ${valueWithUnit("panelPadding")};
+  border-radius: ${valueWithUnit("panelRadius")};
+  gap: ${valueWithUnit("panelGap")};
+}
+
+.lenses-selection-trigger-action {
+  min-height: ${valueWithUnit("rowHeight")};
+  gap: ${valueWithUnit("rowContentGap")};
+  padding: ${valueWithUnit("rowPadY")} ${valueWithUnit("rowPadX")};
+  border-radius: ${valueWithUnit("rowRadius")};
+  font-size: ${valueWithUnit("labelSize")};
+}
+
+.lenses-selection-trigger-action-main {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: ${valueWithUnit("iconColumn")} minmax(0, 1fr);
+  column-gap: ${valueWithUnit("labelGap")};
+}
+
+.lenses-selection-trigger-icon {
+  width: ${valueWithUnit("iconSize")};
+  height: ${valueWithUnit("iconSize")};
+  justify-self: center;
+}
+
+.lenses-selection-trigger-label {
+  font-weight: ${valueWithUnit("labelWeight")};
+}
+
+.lenses-selection-trigger-key {
+  min-width: ${valueWithUnit("keySize")};
+  height: ${valueWithUnit("keySize")};
+  padding: 0 ${valueWithUnit("keyPadX")};
+  font-size: ${valueWithUnit("keyFontSize")};
+}`;
+      }
+
+      controls.forEach(buildControl);
+      buildPresets();
+      showKeys.addEventListener("change", applyState);
+      document.getElementById("resetCurrent").addEventListener("click", () => {
+        document.querySelectorAll(".preset")[0].click();
+      });
+      document.getElementById("copyCss").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(cssOutput.value);
+        } catch {
+          cssOutput.select();
+          document.execCommand("copy");
+        }
+      });
+
+      applyState();
+    </script>
+  </body>
+</html>

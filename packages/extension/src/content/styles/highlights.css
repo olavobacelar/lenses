@@ -1,0 +1,88 @@
+.lenses-highlight {
+  transition: background-color 0.2s ease;
+  display: inline;
+}
+
+.lenses-highlight-side-note-only {
+  filter: none !important;
+}
+
+.lenses-highlight-side-note-only:hover {
+  filter: none !important;
+}
+
+.lenses-highlight[data-annotation-count]:not([data-annotation-count="1"]):hover::after {
+  content: attr(data-annotation-count);
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: #1a1a2e;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.lenses-highlight-side-note-only[data-annotation-count]:hover::after {
+  content: none;
+}
+
+.lenses-source-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 3px;
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  vertical-align: super;
+}
+
+.lenses-annotation-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 3px;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  vertical-align: super;
+}
+
+.lenses-source-marker:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+.lenses-annotation-marker:hover {
+  color: #374151;
+  text-decoration: underline;
+}
+
+.lenses-source-marker.is-loading {
+  color: #6b7280;
+}
+
+.lenses-source-marker.is-empty {
+  color: #9a3412;
+}
+
+.lenses-source-marker.is-error {
+  color: #b91c1c;
+}

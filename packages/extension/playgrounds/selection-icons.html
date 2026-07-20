@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Selection icons playground</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+      }
+
+      body {
+        background: #f6f7f8;
+        padding: 32px;
+        margin: 0;
+      }
+
+      h2 {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #6b7280;
+        margin: 24px 0 8px;
+      }
+
+      .stage {
+        width: min(280px, calc(100vw - 16px));
+        box-sizing: border-box;
+        border: 1px solid #d8dbe4;
+        background: #ffffff;
+        color: #111827;
+        padding: 6px;
+        border-radius: 10px;
+        box-shadow:
+          0 0 0 1.5px rgba(255, 255, 255, 0.92),
+          0 14px 42px rgba(17, 24, 39, 0.22);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .row {
+        appearance: none;
+        width: 100%;
+        min-height: 34px;
+        box-sizing: border-box;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #111827;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 8px;
+        font: inherit;
+        font-size: 13px;
+        line-height: 1.25;
+        text-align: left;
+      }
+
+      .row:hover {
+        background: #f3f4f6;
+      }
+
+      .row.active {
+        background: #f3f4f6;
+      }
+
+      .row .main {
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .row .label {
+        font-weight: 600;
+      }
+
+      .row svg.icon {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 auto;
+        color: #6b7280;
+      }
+
+      kbd {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: inherit;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+      }
+
+      .big {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 16px;
+        background: #ffffff;
+        border: 1px solid #d8dbe4;
+        border-radius: 12px;
+      }
+
+      .big svg {
+        width: 96px;
+        height: 96px;
+        color: #1f2937;
+      }
+
+      .big .caption {
+        font-size: 12px;
+        color: #6b7280;
+        font-family: ui-monospace, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Popup preview (16px @ rendered size)</h2>
+    <div class="stage" id="popup"></div>
+
+    <h2>Large preview (96px, for design review)</h2>
+    <div class="grid" id="big"></div>
+
+    <script>
+      const SVG_NS = "http://www.w3.org/2000/svg";
+
+      function makeSvg(parts) {
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "currentColor");
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        for (const p of parts) {
+          const node = document.createElementNS(SVG_NS, p.tag);
+          for (const [k, v] of Object.entries(p.attrs)) {
+            node.setAttribute(k, v);
+          }
+          svg.appendChild(node);
+        }
+        return svg;
+      }
+
+      const ICONS = {
+        summarize: [
+          { tag: "path", attrs: { d: "M6 3h8l4 4v14H6z" } },
+          { tag: "path", attrs: { d: "M14 3v5h5" } },
+          { tag: "line", attrs: { x1: "9", y1: "12", x2: "15", y2: "12" } },
+          { tag: "line", attrs: { x1: "9", y1: "16", x2: "13", y2: "16" } },
+        ],
+        truth: [
+          { tag: "circle", attrs: { cx: "12", cy: "12", r: "9" } },
+          { tag: "path", attrs: { d: "m8 12 3 3 5-6" } },
+        ],
+
+        // === ITERATION 1: cleaner rectangular speech bubble (Lucide style) ===
+        "explain-v1": [
+          {
+            tag: "path",
+            attrs: {
+              d: "M21 6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v4l5-4h7a2 2 0 0 0 2-2Z",
+            },
+          },
+          { tag: "line", attrs: { x1: "7", y1: "9", x2: "17", y2: "9" } },
+          { tag: "line", attrs: { x1: "7", y1: "13", x2: "13", y2: "13" } },
+        ],
+
+        // === ITERATION 1: cleaner magnifying glass with question mark ===
+        "ask-v1": [
+          { tag: "circle", attrs: { cx: "11", cy: "11", r: "7" } },
+          { tag: "path", attrs: { d: "m16.5 16.5 4.5 4.5" } },
+          {
+            tag: "path",
+            attrs: {
+              d: "M9 9.8a2.2 2.2 0 1 1 3.6 1.8c-.5.4-1.3.8-1.3 1.6",
+            },
+          },
+          { tag: "path", attrs: { d: "M11.2 15h.01" } },
+        ],
+
+        // === ITERATION 2: Lucide circle-help-style hook (chord ~ diameter, large-arc=0) ===
+        "ask-v2": [
+          { tag: "circle", attrs: { cx: "11", cy: "11", r: "7" } },
+          { tag: "path", attrs: { d: "m16.5 16.5 4.5 4.5" } },
+          {
+            tag: "path",
+            attrs: {
+              d: "M9.1 9.5a2.3 2.3 0 0 1 4.4 1c0 1.5-2 1.5-2 2.7",
+            },
+          },
+          { tag: "path", attrs: { d: "M11.5 15h.01" } },
+        ],
+
+        // === ITERATION 3: slightly larger hook, lower stem ===
+        "ask-v3": [
+          { tag: "circle", attrs: { cx: "11", cy: "11", r: "7" } },
+          { tag: "path", attrs: { d: "m16.5 16.5 4.5 4.5" } },
+          {
+            tag: "path",
+            attrs: {
+              d: "M8.7 9.3a2.6 2.6 0 0 1 4.9 1.2c0 1.7-2.2 1.7-2.2 3",
+            },
+          },
+          { tag: "path", attrs: { d: "M11.4 15.4h.01" } },
+        ],
+
+        // === ITERATION 4: tighter, more compact hook ===
+        "ask-v4": [
+          { tag: "circle", attrs: { cx: "11", cy: "11", r: "7" } },
+          { tag: "path", attrs: { d: "m16.5 16.5 4.5 4.5" } },
+          {
+            tag: "path",
+            attrs: {
+              d: "M9.5 9.5a2 2 0 0 1 3.8 1c0 1.3-1.8 1.4-1.8 2.5",
+            },
+          },
+          { tag: "path", attrs: { d: "M11.6 14.8h.01" } },
+        ],
+
+        // === Original explain for comparison ===
+        "explain-original": [
+          { tag: "path", attrs: { d: "M7 8h10" } },
+          { tag: "path", attrs: { d: "M7 12h6" } },
+          {
+            tag: "path",
+            attrs: { d: "M21 12a8 8 0 0 1-8 8H8l-5 3v-6a8 8 0 1 1 18-5Z" },
+          },
+        ],
+        "ask-original": [
+          { tag: "circle", attrs: { cx: "11", cy: "11", r: "7" } },
+          { tag: "path", attrs: { d: "m16.5 16.5 3.5 3.5" } },
+          {
+            tag: "path",
+            attrs: { d: "M9.5 9a2.2 2.2 0 0 1 4.2 1c0 1.6-1.7 2-2.2 3" },
+          },
+          {
+            tag: "circle",
+            attrs: {
+              cx: "11.5",
+              cy: "15.8",
+              r: "0.7",
+              fill: "currentColor",
+              stroke: "none",
+            },
+          },
+        ],
+      };
+
+      const ROWS = [
+        { icon: "summarize", label: "Summarize this", key: "S" },
+        { icon: "truth", label: "Is this true?", key: "T" },
+        { icon: "explain-v1", label: "Explain this", key: "D" },
+        { icon: "ask-v1", label: "Ask", key: "A", active: true },
+      ];
+
+      const popup = document.getElementById("popup");
+      for (const r of ROWS) {
+        const btn = document.createElement("button");
+        btn.className = "row" + (r.active ? " active" : "");
+        const main = document.createElement("span");
+        main.className = "main";
+        const svg = makeSvg(ICONS[r.icon]);
+        svg.classList.add("icon");
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = r.label;
+        main.append(svg, label);
+        const k = document.createElement("kbd");
+        k.textContent = r.key;
+        btn.append(main, k);
+        popup.append(btn);
+      }
+
+      const big = document.getElementById("big");
+      const bigItems = [
+        ["explain-original", "explain — original"],
+        ["explain-v1", "explain — v1 (new)"],
+        ["ask-original", "ask — original"],
+        ["ask-v1", "ask — v1"],
+        ["ask-v2", "ask — v2 (lucide-style)"],
+        ["ask-v3", "ask — v3 (larger)"],
+        ["ask-v4", "ask — v4 (compact)"],
+      ];
+      for (const [k, caption] of bigItems) {
+        const card = document.createElement("div");
+        card.className = "big";
+        const svg = makeSvg(ICONS[k]);
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.textContent = caption;
+        card.append(svg, cap);
+        big.append(card);
+      }
+    </script>
+  </body>
+</html>

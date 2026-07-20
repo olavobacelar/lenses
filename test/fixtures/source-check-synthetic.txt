@@ -1,0 +1,16 @@
+Synthetic source-check fixture
+
+Provenance: Original test text written for the Lenses repository. It does not
+quote or adapt a published article and refers to no real event or person.
+
+The Northbridge Observatory reported that three monitoring stations recorded a
+short burst of unusual light shortly after midnight. The observatory said that
+the stations agreed on the timing but not on the apparent direction.
+
+A municipal notice attributed the difference to maintenance work on one sensor.
+An independent astronomy club said the available readings were not sufficient
+to distinguish a sensor fault from an atmospheric effect. Neither source
+reported injuries, service interruptions, or a continuing hazard.
+
+The observatory plans to publish calibrated readings on Friday. Until those
+readings are available, the cause remains unresolved.

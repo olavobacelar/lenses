@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lenses — UI polish playground</title>
+<style>
+  /* ---------- Playground chrome (dark, minimal) ---------- */
+  :root {
+    --bg: #121214;
+    --panel: #1a1a1d;
+    --panel-2: #202024;
+    --chrome-line: #2c2c31;
+    --chrome-ink: #ececec;
+    --chrome-text: #b8b8bc;
+    --chrome-muted: #808086;
+    --chrome-accent: #7aa2f7;
+    --hit-viz: #f472b6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--chrome-text); }
+  body { display: grid; grid-template-columns: 320px 1fr; -webkit-font-smoothing: antialiased; }
+
+  /* Controls column */
+  #controls {
+    border-right: 1px solid var(--chrome-line);
+    padding: 16px 16px 40px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+  #controls h1 { font-size: 14px; color: var(--chrome-ink); margin: 2px 0 2px; }
+  #controls .sub { font-size: 11px; color: var(--chrome-muted); margin: 0 0 14px; line-height: 1.45; }
+  .group { border-top: 1px solid var(--chrome-line); padding: 12px 0 4px; }
+  .group h2 { font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--chrome-muted); margin: 0 0 10px; font-weight: 700; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; font-size: 12px; }
+  .row label:first-child { color: var(--chrome-text); }
+  .hint { font-size: 10.5px; color: var(--chrome-muted); margin: -6px 0 10px; line-height: 1.4; }
+  .warn { color: #fbbf24; }
+
+  select, .seg {
+    background: var(--panel-2); color: var(--chrome-ink);
+    border: 1px solid var(--chrome-line); border-radius: 7px;
+    font-size: 11.5px; padding: 4px 8px;
+  }
+  select { max-width: 170px; }
+  .seg { display: inline-flex; padding: 2px; gap: 2px; }
+  .seg button {
+    border: 0; background: transparent; color: var(--chrome-muted);
+    font-size: 11px; padding: 3px 8px; border-radius: 5px; cursor: pointer;
+  }
+  .seg button.on { background: #33333a; color: var(--chrome-ink); }
+
+  input[type="range"] { width: 130px; accent-color: var(--chrome-accent); }
+  .val { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--chrome-ink); min-width: 46px; text-align: right; }
+
+  /* mini toggle for the controls column */
+  .ck { position: relative; width: 30px; height: 18px; flex: 0 0 auto; appearance: none; cursor: pointer;
+        background: #3a3a41; border-radius: 999px; transition: background-color 0.15s ease; margin: 0; }
+  .ck:checked { background: var(--chrome-accent); }
+  .ck::after { content: ""; position: absolute; top: 1.5px; left: 1.5px; width: 15px; height: 15px; border-radius: 50%;
+               background: #fff; transition: translate 0.18s cubic-bezier(0.32, 0.72, 0, 1); }
+  .ck:checked::after { translate: 12px 0; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+  .presets button {
+    background: var(--panel-2); color: var(--chrome-text); border: 1px solid var(--chrome-line);
+    border-radius: 999px; font-size: 11px; padding: 4px 10px; cursor: pointer;
+    transition: background-color 0.12s ease, color 0.12s ease, scale 0.15s ease;
+  }
+  .presets button:hover { color: var(--chrome-ink); background: #2a2a30; }
+  .presets button:active { scale: 0.96; }
+
+  /* Right column */
+  #main { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; min-width: 0; }
+  #topbar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--chrome-line); }
+  #topbar .tabs { display: inline-flex; gap: 2px; background: var(--panel-2); border: 1px solid var(--chrome-line); border-radius: 8px; padding: 2px; }
+  #topbar .tabs button { border: 0; background: transparent; color: var(--chrome-muted); font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
+  #topbar .tabs button.on { background: #33333a; color: var(--chrome-ink); }
+  #topbar .spacer { flex: 1; }
+  #compareBtn {
+    background: var(--panel-2); border: 1px solid var(--chrome-line); color: var(--chrome-text);
+    border-radius: 8px; font-size: 12px; padding: 6px 12px; cursor: pointer; user-select: none;
+    transition: background-color 0.12s ease, color 0.12s ease, scale 0.15s ease;
+  }
+  #compareBtn:hover { color: var(--chrome-ink); }
+  #compareBtn:active, #compareBtn.holding { scale: 0.96; background: #3a2f2f; color: #fca5a5; border-color: #5b3a3a; }
+  #compareTag { font-size: 11px; color: #fca5a5; opacity: 0; transition: opacity 0.12s ease; }
+  #compareTag.on { opacity: 1; }
+
+  #stageWrap { overflow: auto; display: grid; place-items: center; padding: 28px; }
+
+  /* Prompt bar */
+  #promptBar { border-top: 1px solid var(--chrome-line); background: var(--panel); padding: 12px 16px 14px; }
+  #promptBar .phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  #promptBar .phead span { font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--chrome-muted); font-weight: 700; }
+  #copyBtn { background: var(--chrome-accent); color: #10131c; border: 0; border-radius: 7px; font-size: 12px; font-weight: 600;
+             padding: 5px 12px; cursor: pointer; transition: filter 0.12s ease, scale 0.15s ease; }
+  #copyBtn:hover { filter: brightness(1.08); }
+  #copyBtn:active { scale: 0.96; }
+  #prompt { font-size: 12px; line-height: 1.55; color: var(--chrome-text); max-height: 150px; overflow-y: auto; white-space: pre-wrap; margin: 0; font-family: inherit; }
+
+  /* =====================================================================
+     STAGE — replicas of the extension surfaces. Everything below reads
+     custom properties + data-attributes/classes that the controls set.
+     ===================================================================== */
+  #stage {
+    --accent: #2f6df6; --accent-strong: #2a62dd; --accent-soft: #eaf0fe; --ring-c: rgba(47, 109, 246, 0.24);
+    --paper: #ffffff; --paper-soft: #f7f7f6; --paper-warm: #fbfbfb;
+    --ink: #0d0d0d; --text: #424242; --muted: #737373;
+    --line: #e6e6e6; --line-soft: #f2f2f2;
+    --canvas: #efeeec; --page-ink: #3f3d3a;
+    --sw-track: #e3e3e3; --sw-thumb: #ffffff;
+    --shadow-border: rgba(0, 0, 0, 0.07);
+    --img-outline: rgba(0, 0, 0, 0.1);
+
+    /* dynamic tokens (set from JS) */
+    --r-card: 10px; --r-btn: 10px; --r-item: 10px; --r-input: 10px; --r-sm: 10px;
+    --dur-micro: 120ms; --dur-std: 160ms; --ease: ease;
+    --press-scale: 0.96;
+    --sw-w: 30px; --sw-h: 18px; --sw-t: 15px; --sw-pad: 1.5px; --sw-x: 13.5px;
+    --sw-dur: 0.22s; --sw-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+    background: var(--canvas);
+    border-radius: 14px;
+    padding: 26px;
+    width: min(980px, 100%);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background-color 0.2s ease;
+  }
+  #stage[data-theme="dark"] {
+    --accent: #7aa2f7; --accent-strong: #8aadf8; --accent-soft: #2a3140; --ring-c: rgba(122, 162, 247, 0.28);
+    --paper: #323234; --paper-soft: #1b1b1d; --paper-warm: #2d2d2f;
+    --ink: #ececec; --text: #b6b6b6; --muted: #8c8c8d;
+    --line: #424243; --line-soft: #3a3a3c;
+    --canvas: #161618; --page-ink: #a5a5a8;
+    --sw-track: #525253; --sw-thumb: #ececec;
+    --shadow-border: rgba(255, 255, 255, 0.09);
+    --img-outline: rgba(255, 255, 255, 0.1);
+  }
+
+  #stage.smooth { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  #stage:not(.smooth) { -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; }
+  #stage.tnums .num { font-variant-numeric: tabular-nums; }
+  #stage.twrap .tw-h { text-wrap: balance; }
+  #stage.twrap .tw-p { text-wrap: pretty; }
+  #stage.img-outline .thumb { outline: 1px solid var(--img-outline); outline-offset: -1px; }
+
+  .surface { display: none; }
+  .surface.on { display: block; }
+
+  /* ---- shared primitives ---- */
+  #stage button { font: inherit; cursor: pointer; }
+
+  /* elevated container: border mode is data-driven */
+  .elev {
+    background: var(--paper);
+    border-radius: var(--r-card);
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  #stage[data-border="solid"] .elev { border-color: var(--line); box-shadow: var(--drop); }
+  #stage[data-border="shadow"] .elev { box-shadow: 0 0 0 1px var(--shadow-border), var(--drop); }
+  #stage[data-border="both"]   .elev { border-color: var(--line); box-shadow: 0 0 0 1px var(--shadow-border), var(--drop); }
+
+  .iconbtn, .pressable { transition: background-color var(--dur-micro) var(--ease), color var(--dur-micro) var(--ease),
+                          border-color var(--dur-micro) var(--ease), scale var(--dur-std) var(--ease), translate var(--dur-std) var(--ease); }
+  #stage[data-press="scale"] .pressable:active:not(:disabled) { scale: var(--press-scale); }
+  #stage[data-press="nudge"] .pressable:active:not(:disabled) { translate: 0 0.5px; }
+
+  /* focus rings — three treatments */
+  #stage[data-ring="outline"] .pressable:focus-visible,
+  #stage[data-ring="outline"] .focus-demo { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: none; }
+  #stage[data-ring="shadow2"] .pressable:focus-visible,
+  #stage[data-ring="shadow2"] .focus-demo { outline: none; box-shadow: 0 0 0 2px var(--ring-c); }
+  #stage[data-ring="shadow3"] .pressable:focus-visible,
+  #stage[data-ring="shadow3"] .focus-demo { outline: none; box-shadow: 0 0 0 3px var(--ring-c); }
+
+  /* hit-area extension + visualization (::before participates in parent hit-testing;
+     ::after stays free for the switch thumb) */
+  .hitable { position: relative; }
+  .hitable::before { content: ""; position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 100%; height: 100%; border-radius: 6px; }
+  #stage.hit-ext .hitable::before { width: max(40px, 100%); height: max(40px, 100%); }
+  #stage.hit-viz .hitable::before { outline: 1px dashed var(--hit-viz); outline-offset: -1px; }
+
+  .iconbtn {
+    display: inline-grid; place-items: center;
+    background: transparent; border: 1px solid transparent; color: var(--muted);
+    border-radius: var(--r-sm); padding: 0;
+  }
+  .iconbtn:hover { background: var(--paper-warm); color: var(--ink); border-color: var(--line-soft); }
+  .iconbtn svg { display: block; }
+
+  /* toggle switch — spec-driven */
+  .sw { position: relative; appearance: none; margin: 0; cursor: pointer; flex: 0 0 auto;
+        width: var(--sw-w); height: var(--sw-h); border-radius: 999px; border: 0;
+        background: var(--sw-track); transition: background-color 0.18s ease; }
+  .sw:checked { background: var(--accent-strong); }
+  .sw::after { content: ""; position: absolute; top: 50%; left: 0; translate: var(--sw-pad) -50%;
+               width: var(--sw-t); height: var(--sw-t); border-radius: 50%;
+               background: var(--sw-thumb); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+               transition: translate var(--sw-dur) var(--sw-ease); }
+  .sw:checked::after { translate: var(--sw-x) -50%; }
+
+  /* ---------- POPUP replica ---------- */
+  .popup { width: 340px; margin: 0 auto; padding: 14px; --drop: 0 8px 24px rgba(0, 0, 0, 0.10); }
+  #stage[data-theme="dark"] .popup { --drop: 0 8px 24px rgba(0, 0, 0, 0.35); }
+  .popup header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .popup .site { flex: 1; min-width: 0; }
+  .popup .site .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .popup .site .d { font-size: 11px; color: var(--muted); }
+  .popup .iconbtn { width: 28px; height: 28px; }
+  .seclabel { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+          border: 1px solid var(--line); background: var(--paper); color: var(--text);
+          font-size: 12px; font-weight: 600; padding: 5px 11px; }
+  .chip:hover { border-color: var(--muted); color: var(--ink); }
+  .chip.checked { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+  .chip .pin { display: inline-grid; place-items: center; width: 16px; height: 16px; border: 0; background: transparent;
+               color: var(--muted); padding: 0; opacity: 0; transition: opacity 0.12s ease, color 0.12s ease; border-radius: 4px; }
+  .chip:hover .pin { opacity: 1; }
+  .chip .pin:hover { color: var(--accent-strong); }
+  .composer { border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper-warm); padding: 8px;
+              transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .composer .ta { font: inherit; font-size: 13px; line-height: 1.45; border: 0; background: transparent; width: 100%;
+                  resize: none; color: var(--ink); outline: none; height: 34px; border-radius: var(--r-input); }
+  .composer .bar { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .mode { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text);
+          border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 3px 10px; }
+  .send { width: 30px; height: 30px; border-radius: 50%; border: 0; display: inline-grid; place-items: center; }
+  .send { background: var(--ink); color: var(--paper); }
+  #stage[data-theme="dark"] .send { background: #ededed; color: #1b1b1d; }
+  .menu { margin-top: 10px; padding: 5px; border-radius: var(--r-card); background: var(--paper); display: flex; flex-direction: column; gap: 2px; }
+  #stage[data-border="solid"] .menu, #stage[data-border="both"] .menu { border: 1px solid var(--line); }
+  #stage[data-border="shadow"] .menu { box-shadow: 0 0 0 1px var(--shadow-border), 0 12px 30px rgba(17, 24, 39, 0.16); }
+  .menu .mi { display: flex; gap: 8px; align-items: baseline; text-align: left; padding: 7px 8px; border: 0; background: transparent;
+              border-radius: var(--r-item); color: var(--text); font-size: 12px; }
+  .menu .mi:hover { background: var(--paper-soft); color: var(--ink); }
+  .menu .mi b { font-size: 12.5px; color: var(--ink); font-weight: 650; }
+  .menu .mi small { color: var(--muted); font-size: 11px; }
+  .togglerow { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--text); }
+  .status { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18); }
+
+  /* ---------- SIDE PANEL replica ---------- */
+  .sidepanel { width: 380px; margin: 0 auto; padding: 12px; --drop: 0 8px 24px rgba(0, 0, 0, 0.08); background: var(--paper-soft); border-radius: calc(var(--r-card) + 4px); }
+  #stage[data-theme="dark"] .sidepanel { --drop: 0 8px 24px rgba(0, 0, 0, 0.30); }
+  .acc { padding: 12px; margin-bottom: 10px; }
+  .acc .head { display: flex; align-items: center; gap: 8px; }
+  .acc .head h3 { font-size: 13px; font-weight: 650; color: var(--ink); margin: 0; flex: 1; }
+  .badge { font-size: 11px; font-weight: 650; color: var(--muted); background: var(--paper-soft); border-radius: 999px; padding: 2px 8px; }
+  .bubble { background: var(--paper-soft); border-radius: var(--r-card); padding: 10px 12px; margin-top: 10px; font-size: 13px; color: var(--text); }
+  #stage[data-theme="dark"] .bubble { background: #34353a; }
+  .tools { display: flex; gap: 4px; margin-top: 6px; }
+  .tools .iconbtn { width: 24px; height: 24px; }
+  .sp-composer { margin-top: 10px; }
+  .sp-composer .inner { display: flex; align-items: flex-end; gap: 8px; padding: 8px; }
+  .sp-composer .ta { flex: 1; }
+  .thumbrow { display: flex; gap: 8px; margin-top: 10px; align-items: flex-start; }
+  .thumb { width: 72px; height: 48px; border-radius: var(--r-sm); flex: 0 0 auto;
+           background: linear-gradient(135deg, #d9e4f5 0%, #f2e8d9 55%, #e5d9f2 100%); position: relative; }
+  #stage[data-theme="dark"] .thumb { background: linear-gradient(135deg, #2d3648 0%, #453d2e 55%, #3a2d48 100%); }
+  .thumb .rm { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%;
+               border: 0; background: var(--ink); color: var(--paper); font-size: 11px; line-height: 1; display: grid; place-items: center; }
+  .meta { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+  /* ---------- IN-PAGE replica ---------- */
+  .inpage { position: relative; padding: 18px 64px 18px 18px; min-height: 380px; }
+  .fakepage { color: var(--page-ink); font-size: 13.5px; line-height: 1.65; max-width: 560px; opacity: 0.85; }
+  .fakepage h4 { font-size: 17px; margin: 0 0 6px; color: var(--page-ink); }
+  .chatbox { position: absolute; right: 84px; bottom: 18px; width: 320px; padding: 12px; --drop: 0 12px 34px rgba(0, 0, 0, 0.16); }
+  #stage[data-theme="dark"] .chatbox { --drop: 0 12px 34px rgba(0, 0, 0, 0.42); }
+  .chatbox .head { display: flex; align-items: flex-start; gap: 8px; }
+  .chatbox .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .chatbox .subtitle { font-size: 11px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+  .chatbox .close { margin-left: auto; width: 18px; height: 18px; border: 0; background: transparent; color: var(--muted);
+                    display: grid; place-items: center; padding: 0; font-size: 13px; line-height: 1; border-radius: 4px; }
+  .chatbox .close:hover { color: var(--ink); }
+  .chatbox .msg { font-size: 13px; color: var(--text); margin: 10px 0; }
+  .dock { position: absolute; right: 16px; top: 50%; translate: 0 -50%; width: 44px; padding: 6px;
+          display: flex; flex-direction: column; align-items: center; gap: 4px;
+          --drop: 0 6px 18px rgba(0, 0, 0, 0.12); border-radius: calc(var(--r-btn) + 4px); }
+  #stage[data-theme="dark"] .dock { --drop: 0 6px 18px rgba(0, 0, 0, 0.34); }
+  .dock .iconbtn { width: 30px; height: 30px; border-radius: var(--r-btn); }
+  .dock .count { font-size: 10px; font-weight: 650; color: var(--accent-strong); background: var(--accent-soft);
+                 border-radius: 999px; padding: 2px 7px; margin-top: 2px; }
+  .dock .clear { width: 20px; height: 20px; border: 0; background: transparent; color: var(--muted); border-radius: 50%;
+                 display: grid; place-items: center; font-size: 11px; padding: 0; }
+  .dock .clear:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); }
+</style>
+</head>
+<body>
+
+<aside id="controls">
+  <h1>Lenses — UI polish playground</h1>
+  <p class="sub">Live replicas of the popup, side panel, and in-page UI. Baseline = the repo today; every control applies one proposed change from the investigation.</p>
+
+  <div class="presets" id="presets"></div>
+
+  <div class="group">
+    <h2>Typography</h2>
+    <div class="row"><label>Font smoothing (antialiased)</label><input type="checkbox" class="ck" data-k="smoothing"></div>
+    <div class="row"><label>Tabular numbers</label><input type="checkbox" class="ck" data-k="tabular"></div>
+    <p class="hint">Watch the live counters — proportional digits make them jitter.</p>
+    <div class="row"><label>text-wrap balance / pretty</label><input type="checkbox" class="ck" data-k="textwrap"></div>
+  </div>
+
+  <div class="group">
+    <h2>Radius system</h2>
+    <div class="row"><label>Token scale</label>
+      <span class="seg" data-k="radiusMode">
+        <button data-v="flat">Flat 10px</button><button data-v="scale">4/6/8/10/12</button>
+      </span>
+    </div>
+    <p class="hint">Flat = popup/side-panel today (every token aliases 10px). Scale enables concentric nesting — clearest on the mode menu and dock buttons.</p>
+  </div>
+
+  <div class="group">
+    <h2>Surfaces</h2>
+    <div class="row"><label>Elevated edges</label>
+      <span class="seg" data-k="borderMode">
+        <button data-v="solid">Border</button><button data-v="both">Both</button><button data-v="shadow">Shadow-border</button>
+      </span>
+    </div>
+    <div class="row"><label>Image outlines (1px, 10%)</label><input type="checkbox" class="ck" data-k="imgOutline"></div>
+  </div>
+
+  <div class="group">
+    <h2>Interaction</h2>
+    <div class="row"><label>Press feedback</label>
+      <span class="seg" data-k="press">
+        <button data-v="none">None</button><button data-v="nudge">1px nudge</button><button data-v="scale">Scale</button>
+      </span>
+    </div>
+    <div class="row"><label>Press scale</label><input type="range" min="0.88" max="1" step="0.01" data-k="pressScale"><span class="val" id="pressScaleVal"></span></div>
+    <p class="hint" id="pressHint">Click and hold any button in the preview to feel it.</p>
+    <div class="row"><label>Micro transitions</label><input type="range" min="60" max="300" step="10" data-k="durMicro"><span class="val" id="durMicroVal"></span></div>
+    <div class="row"><label>Standard transitions</label><input type="range" min="80" max="500" step="10" data-k="durStd"><span class="val" id="durStdVal"></span></div>
+    <div class="row"><label>Easing</label>
+      <select data-k="easing">
+        <option value="ease">ease</option>
+        <option value="ease-out">ease-out</option>
+        <option value="cubic-bezier(0.2, 0, 0, 1)">cubic-bezier(0.2, 0, 0, 1)</option>
+        <option value="cubic-bezier(0.32, 0.72, 0, 1)">cubic-bezier(0.32, 0.72, 0, 1)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Focus ring</h2>
+    <div class="row"><label>Treatment</label>
+      <span class="seg" data-k="ring">
+        <button data-v="shadow2">Ring 2px</button><button data-v="shadow3">Ring 3px</button><button data-v="outline">Outline</button>
+      </span>
+    </div>
+    <div class="row"><label>Pin a focus demo</label><input type="checkbox" class="ck" data-k="showFocus"></div>
+    <p class="hint">Or Tab through the preview. Today: popup 2px shadow, options 3px shadow, side panel outline.</p>
+  </div>
+
+  <div class="group">
+    <h2>Hit areas</h2>
+    <div class="row"><label>Extend small controls to 40px</label><input type="checkbox" class="ck" data-k="hitExtend"></div>
+    <div class="row"><label>Visualize hit areas</label><input type="checkbox" class="ck" data-k="hitViz"></div>
+    <p class="hint">Dashed pink = actual clickable rect. Try the chatbox ✕ (18px) and dock clear (20px) with extension off.</p>
+  </div>
+
+  <div class="group">
+    <h2>Toggle switch spec</h2>
+    <div class="row"><label>Spec</label>
+      <span class="seg" data-k="switchSpec">
+        <button data-v="popup">Popup 30×18 spring</button><button data-v="options">Options 34×20 ease</button>
+      </span>
+    </div>
+    <p class="hint">Flick the switch in the popup replica to compare thumb motion.</p>
+  </div>
+</aside>
+
+<main id="main">
+  <div id="topbar">
+    <div class="tabs" id="tabs">
+      <button data-tab="popup">Popup</button>
+      <button data-tab="sidepanel">Side panel</button>
+      <button data-tab="inpage">In-page</button>
+    </div>
+    <span class="seg" data-k="theme" style="margin-left:4px">
+      <button data-v="light">Light</button><button data-v="dark">Dark</button>
+    </span>
+    <div class="spacer"></div>
+    <span id="compareTag">showing current repo baseline</span>
+    <button id="compareBtn" title="Press and hold">Hold to compare with current</button>
+  </div>
+
+  <div id="stageWrap">
+    <div id="stage">
+
+      <!-- POPUP -->
+      <section class="surface" data-surface="popup">
+        <div class="popup elev">
+          <header>
+            <div class="site">
+              <div class="t tw-h">The Verge — Inside the new browser engine wars</div>
+              <div class="d">theverge.com</div>
+            </div>
+            <button class="iconbtn pressable hitable" aria-label="Open source panel"><svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 3h11M2 7.5h11M2 12h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+            <button class="iconbtn pressable hitable" aria-label="Settings"><svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M7.5 1.5v2M7.5 11.5v2M1.5 7.5h2M11.5 7.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </header>
+
+          <p class="seclabel">Lenses</p>
+          <div class="chips">
+            <button class="chip pressable checked">Claim check<span class="pin hitable" role="button" aria-label="Pin">📌</span></button>
+            <button class="chip pressable">Summarize<span class="pin hitable" role="button" aria-label="Pin">📌</span></button>
+            <button class="chip pressable">Bias scan<span class="pin hitable" role="button" aria-label="Pin">📌</span></button>
+          </div>
+
+          <div class="composer">
+            <textarea class="ta" placeholder="Ask about this page…"></textarea>
+            <div class="bar">
+              <button class="mode pressable">Chat ▾</button>
+              <button class="send pressable hitable" id="focusTarget" aria-label="Send"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+
+          <div class="menu">
+            <button class="mi pressable"><b>Chat</b><small>Ask questions grounded in this page</small></button>
+            <button class="mi pressable"><b>Lens</b><small>Run a structured analysis</small></button>
+            <button class="mi pressable"><b>Note</b><small>Save a highlight with context</small></button>
+          </div>
+
+          <div class="togglerow"><span>Selection trigger</span><input type="checkbox" class="sw hitable" checked></div>
+          <div class="togglerow"><span>Page dock</span><input type="checkbox" class="sw hitable"></div>
+
+          <div class="status"><span class="dot"></span><span>Connected · <span class="num" data-counter="tokens">1,284</span> tokens today</span></div>
+        </div>
+      </section>
+
+      <!-- SIDE PANEL -->
+      <section class="surface" data-surface="sidepanel">
+        <div class="sidepanel">
+          <div class="acc elev">
+            <div class="head">
+              <h3 class="tw-h">Claims found on this page</h3>
+              <span class="badge num" data-counter="claims">12</span>
+              <button class="iconbtn pressable hitable" style="width:22px;height:22px" aria-label="Stop"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" rx="2" fill="currentColor"/></svg></button>
+            </div>
+            <div class="bubble tw-p">The article claims the new engine renders pages 40% faster than Chromium on mid-range hardware, citing an internal benchmark that hasn't been independently verified.</div>
+            <div class="tools">
+              <button class="iconbtn pressable hitable" aria-label="Copy"><svg width="12" height="12" viewBox="0 0 15 15" fill="none"><rect x="4" y="4" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 4V3a1.5 1.5 0 0 0-1.5-1.5h-5A1.5 1.5 0 0 0 3 3v7a1.5 1.5 0 0 0 1 1.4" stroke="currentColor" stroke-width="1.2"/></svg></button>
+              <button class="iconbtn pressable hitable" aria-label="Retry"><svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M12.5 7.5a5 5 0 1 1-1.7-3.8M12.5 1.5v3h-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+              <button class="iconbtn pressable hitable" aria-label="Rewind"><svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M7 3 3 7.5 7 12M12 3 8 7.5l4 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="thumbrow">
+              <div class="thumb"><button class="rm pressable hitable" aria-label="Remove">✕</button></div>
+              <div class="thumb" style="opacity:.85"><button class="rm pressable hitable" aria-label="Remove">✕</button></div>
+            </div>
+            <div class="meta">Verified <span class="num" data-counter="verified">7</span> of <span class="num">12</span> · updated <span class="num" data-counter="secs">4</span>s ago</div>
+          </div>
+
+          <div class="acc elev sp-composer">
+            <div class="inner composer" style="border:0;background:transparent;padding:0">
+              <textarea class="ta" placeholder="Reply…"></textarea>
+              <button class="send pressable hitable" aria-label="Send"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IN-PAGE -->
+      <section class="surface" data-surface="inpage">
+        <div class="inpage">
+          <div class="fakepage">
+            <h4>Inside the new browser engine wars</h4>
+            <p>For the first time in a decade, three teams are shipping rendering engines built from scratch. The bet is the same one Netscape made in 1998 — that the web platform has accreted enough legacy that a clean rewrite can leapfrog the incumbents…</p>
+            <p>Critics point out that every previous attempt died against the compatibility wall. What is different this time, the teams argue, is that the spec surface is finally testable end-to-end.</p>
+          </div>
+
+          <div class="chatbox elev">
+            <div class="head">
+              <div>
+                <div class="eyebrow">Lenses · Selection</div>
+                <div class="subtitle tw-p">Grounded in the highlighted paragraph and 2 sources on this page</div>
+              </div>
+              <button class="close pressable hitable" aria-label="Close">✕</button>
+            </div>
+            <div class="msg tw-p">The 40% claim traces to a single vendor benchmark. Two independent tests found 12–18% on the same hardware tier.</div>
+            <div class="composer">
+              <textarea class="ta" placeholder="Follow up…"></textarea>
+              <div class="bar">
+                <span style="font-size:11px;color:var(--muted)"><span class="num" data-counter="sources">2</span> sources</span>
+                <button class="send pressable hitable" aria-label="Send"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dock elev">
+            <button class="iconbtn pressable hitable" aria-label="Lenses"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="2" fill="currentColor"/></svg></button>
+            <button class="iconbtn pressable hitable" aria-label="Highlights"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 9.5 9.5 3l2.5 2.5L5.5 12H3v-2.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+            <button class="iconbtn pressable hitable" aria-label="Chat"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h8A1.5 1.5 0 0 1 13 3.5v5A1.5 1.5 0 0 1 11.5 10H8l-3 3v-3H3.5A1.5 1.5 0 0 1 2 8.5v-5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+            <span class="count num" data-counter="findings">5</span>
+            <button class="clear pressable hitable" aria-label="Clear results">✕</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="promptBar">
+    <div class="phead"><span>Prompt</span><button id="copyBtn">Copy prompt</button></div>
+    <pre id="prompt"></pre>
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* BASELINE = the repo today. State starts on the "Full polish" preset. */
+  const BASELINE = {
+    theme: 'light', smoothing: false, tabular: false, textwrap: false,
+    radiusMode: 'flat', borderMode: 'both', imgOutline: false,
+    press: 'nudge', pressScale: 0.96, durMicro: 130, durStd: 160, easing: 'ease',
+    ring: 'shadow2', showFocus: false, hitExtend: false, hitViz: false,
+    switchSpec: 'options', tab: 'popup',
+  };
+
+  const PRESETS = {
+    'Current (repo)': { ...BASELINE },
+    'Full polish': {
+      smoothing: true, tabular: true, textwrap: true, radiusMode: 'scale', borderMode: 'shadow',
+      imgOutline: true, press: 'scale', pressScale: 0.96, durMicro: 120, durStd: 160, easing: 'ease',
+      ring: 'outline', hitExtend: true, switchSpec: 'popup',
+    },
+    'Mechanical sweeps': {
+      smoothing: true, tabular: true, textwrap: true, imgOutline: true, press: 'scale', pressScale: 0.96, hitExtend: true,
+      radiusMode: 'flat', borderMode: 'both', ring: 'shadow2', switchSpec: 'options', durMicro: 130, durStd: 160, easing: 'ease',
+    },
+    'Tokens only': {
+      radiusMode: 'scale', durMicro: 120, durStd: 160, easing: 'ease', ring: 'outline', switchSpec: 'popup',
+      borderMode: 'both', smoothing: false, tabular: false, textwrap: false, imgOutline: false, press: 'nudge', hitExtend: false,
+    },
+  };
+
+  const state = { ...BASELINE, ...PRESETS['Full polish'], showFocus: false, hitViz: false, theme: 'light', tab: 'popup' };
+  let compareHold = false;
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const stage = $('#stage');
+
+  const SWITCH_SPECS = {
+    popup:   { w: 30, h: 18, t: 15, pad: 1.5, x: 13.5, dur: '0.22s', ease: 'cubic-bezier(0.32, 0.72, 0, 1)' },
+    options: { w: 34, h: 20, t: 14, pad: 3,   x: 17,   dur: '0.16s', ease: 'ease' },
+  };
+
+  function view() { return compareHold ? { ...BASELINE, theme: state.theme, tab: state.tab, hitViz: state.hitViz, showFocus: state.showFocus } : state; }
+
+  function renderPreview() {
+    const v = view();
+    stage.dataset.theme = v.theme;
+    stage.dataset.border = v.borderMode;
+    stage.dataset.press = v.press;
+    stage.dataset.ring = v.ring;
+    stage.classList.toggle('smooth', v.smoothing);
+    stage.classList.toggle('tnums', v.tabular);
+    stage.classList.toggle('twrap', v.textwrap);
+    stage.classList.toggle('img-outline', v.imgOutline);
+    stage.classList.toggle('hit-ext', v.hitExtend);
+    stage.classList.toggle('hit-viz', v.hitViz);
+
+    const s = stage.style;
+    if (v.radiusMode === 'scale') {
+      s.setProperty('--r-card', '10px'); s.setProperty('--r-btn', '8px');
+      s.setProperty('--r-item', '5px');  s.setProperty('--r-input', '6px'); s.setProperty('--r-sm', '6px');
+    } else {
+      ['--r-card', '--r-btn', '--r-item', '--r-input', '--r-sm'].forEach(p => s.setProperty(p, '10px'));
+    }
+    s.setProperty('--dur-micro', v.durMicro + 'ms');
+    s.setProperty('--dur-std', v.durStd + 'ms');
+    s.setProperty('--ease', v.easing);
+    s.setProperty('--press-scale', v.pressScale);
+
+    const sw = SWITCH_SPECS[v.switchSpec];
+    s.setProperty('--sw-w', sw.w + 'px'); s.setProperty('--sw-h', sw.h + 'px'); s.setProperty('--sw-t', sw.t + 'px');
+    s.setProperty('--sw-pad', sw.pad + 'px'); s.setProperty('--sw-x', sw.x + 'px');
+    s.setProperty('--sw-dur', sw.dur); s.setProperty('--sw-ease', sw.ease);
+
+    $('#focusTarget').classList.toggle('focus-demo', v.showFocus);
+
+    $$('.surface').forEach(el => el.classList.toggle('on', el.dataset.surface === state.tab));
+    $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
+    $$('.seg').forEach(seg => {
+      const k = seg.dataset.k;
+      $$('button', seg).forEach(b => b.classList.toggle('on', String(state[k]) === b.dataset.v));
+    });
+    $$('input.ck').forEach(c => { c.checked = !!state[c.dataset.k]; });
+    $$('input[type="range"]').forEach(r => { r.value = state[r.dataset.k]; });
+    $('select[data-k="easing"]').value = state.easing;
+
+    $('#pressScaleVal').textContent = Number(state.pressScale).toFixed(2);
+    $('#durMicroVal').textContent = state.durMicro + 'ms';
+    $('#durStdVal').textContent = state.durStd + 'ms';
+    const hint = $('#pressHint');
+    if (state.press === 'scale' && state.pressScale < 0.95) {
+      hint.innerHTML = '<span class="warn">Below 0.95 feels exaggerated — the skill standard is 0.96.</span>';
+    } else {
+      hint.textContent = 'Click and hold any button in the preview to feel it.';
+    }
+    $('#compareTag').classList.toggle('on', compareHold);
+  }
+
+  function updatePrompt() {
+    const p = [];
+    if (state.smoothing) p.push('add `-webkit-font-smoothing: antialiased` (+ `-moz-osx-font-smoothing: grayscale`) to every surface root — popup.css, sidepanel.css, options.css, debug-view.css, and the shadow-DOM container classes in content/styles/base.css');
+    if (state.tabular) p.push('apply `font-variant-numeric: tabular-nums` to all dynamic counters (dock result counts, web-search counts, annotation confidence, popup/debug run counts)');
+    if (state.textwrap) p.push('add `text-wrap: balance` to headings/titles and `text-wrap: pretty` to descriptions, hints, and chat message bodies');
+    if (state.radiusMode === 'scale') p.push('restore the real radius scale (xs 4 / sm 6 / md 8 / lg 10 / xl 12px) in popup.css, sidepanel.css, and debug-view.css — they currently alias every token to a flat 10px — and make nested radii concentric (e.g. menu items 5px inside a 10px menu with 5px padding)');
+    if (state.borderMode !== BASELINE.borderMode) {
+      p.push(state.borderMode === 'shadow'
+        ? 'replace solid 1px borders on elevated surfaces (chatbox, dock, selection trigger, source callout, popup menu, side-panel cards) with a layered shadow-border: `0 0 0 1px rgba(0,0,0,0.06)` as the first box-shadow layer (rgba(255,255,255,0.09) in dark mode), keeping the existing drop shadow'
+        : 'use solid 1px borders (no shadow-border layer) on elevated surfaces');
+    }
+    if (state.imgOutline) p.push('add `outline: 1px solid rgba(0,0,0,0.1); outline-offset: -1px` to image thumbnails and favicons (pure white 0.1 in dark mode — never a tinted neutral)');
+    if (state.press === 'scale') {
+      p.push(`give every interactive button \`:active:not(:disabled) { scale: ${Number(state.pressScale).toFixed(2)} }\` with \`scale\` added to its transition-property, replacing the popup's translateY(0.5px) nudge${state.pressScale < 0.95 ? ' (WARNING: below the 0.95 floor the skill allows — reconsider 0.96)' : ''}`);
+    } else if (state.press === 'none') {
+      p.push("remove the popup's translateY(0.5px) press nudge and add no press feedback");
+    }
+    if (state.durMicro !== BASELINE.durMicro || state.durStd !== BASELINE.durStd || state.easing !== BASELINE.easing) {
+      p.push(`unify transition timing on two shared tokens: ~${state.durMicro}ms for color/opacity micro-interactions and ~${state.durStd}ms for transform/layout, easing \`${state.easing}\` — replacing the current spread of 0.12/0.14/0.15/0.16/0.18/0.2s (and remove options.css's global 4-property transition on all buttons/inputs)`);
+    }
+    if (state.ring !== BASELINE.ring) {
+      const rings = { outline: '`outline: 2px solid var(--accent); outline-offset: 2px`', shadow2: '`box-shadow: 0 0 0 2px var(--accent-ring)`', shadow3: '`box-shadow: 0 0 0 3px var(--accent-ring)`' };
+      p.push(`unify focus-visible rings on ${rings[state.ring]} across all surfaces (today: popup 2px shadow, options 3px shadow, side panel outline)`);
+    }
+    if (state.hitExtend) p.push('extend every sub-40px control to a 40×40px hit area via a `::after` pseudo-element (chatbox close 18px, callout close 16px, pin buttons 16px, screenshot/result clear 20px, message tools 24px, delete buttons 26px, toggles, icon buttons 28–32px) — capping extension where neighbors would overlap (message-tool rows, dock rail, chip pins)');
+    if (state.switchSpec !== BASELINE.switchSpec) {
+      const sw = SWITCH_SPECS[state.switchSpec];
+      p.push(`standardize both toggle switches (popup 30×18 vs options 34×20 today) on one spec: ${sw.w}×${sw.h}px track, ${sw.t}px thumb, \`transition: translate ${sw.dur} ${sw.ease}\``);
+    }
+
+    $('#prompt').textContent = p.length
+      ? `In the Lenses extension (packages/extension/src), apply these UI-polish changes consistently across all surfaces — popup, side panel, in-page content UI (shadow DOM), options, and debug view:\n\n${p.map(x => '- ' + x).join('\n')}\n\nKeep the content UI's --lenses-* token namespace separate (shadow-DOM isolation) but make its values match. Mirror every change in dark-theme.css. Follow the repo's design-intent spec-test convention where applicable.`
+      : 'No changes from the current implementation selected — everything matches the repo baseline.';
+  }
+
+  function updateAll() { renderPreview(); updatePrompt(); }
+
+  /* ---- wire controls ---- */
+  $$('input.ck').forEach(c => c.addEventListener('change', () => { state[c.dataset.k] = c.checked; updateAll(); }));
+  $$('input[type="range"]').forEach(r => r.addEventListener('input', () => { state[r.dataset.k] = Number(r.value); updateAll(); }));
+  $('select[data-k="easing"]').addEventListener('change', e => { state.easing = e.target.value; updateAll(); });
+  $$('.seg').forEach(seg => seg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    state[seg.dataset.k] = b.dataset.v; updateAll();
+  }));
+  $('#tabs').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.tab = b.dataset.tab; updateAll();
+  });
+
+  const presetsEl = $('#presets');
+  Object.keys(PRESETS).forEach(name => {
+    const b = document.createElement('button');
+    b.textContent = name;
+    b.addEventListener('click', () => { Object.assign(state, PRESETS[name]); updateAll(); });
+    presetsEl.appendChild(b);
+  });
+
+  /* hold-to-compare */
+  const cmp = $('#compareBtn');
+  const setHold = on => { compareHold = on; cmp.classList.toggle('holding', on); renderPreview(); };
+  cmp.addEventListener('pointerdown', () => setHold(true));
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => cmp.addEventListener(ev, () => setHold(false)));
+
+  /* live counters — demonstrate tabular-nums */
+  const counters = {
+    tokens:  () => (1100 + Math.floor(Math.random() * 900)).toLocaleString('en-US'),
+    claims:  () => String(9 + Math.floor(Math.random() * 9)),
+    verified:() => String(4 + Math.floor(Math.random() * 6)),
+    findings:() => String(3 + Math.floor(Math.random() * 9)),
+    sources: () => String(1 + Math.floor(Math.random() * 4)),
+    secs:    () => String(1 + Math.floor(Math.random() * 59)),
+  };
+  setInterval(() => {
+    if (document.hidden) return;
+    $$('[data-counter]').forEach(el => { const f = counters[el.dataset.counter]; if (f) el.textContent = f(); });
+  }, 700);
+
+  /* copy */
+  $('#copyBtn').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('#prompt').textContent); } catch (_) {
+      const ta = document.createElement('textarea');
+      ta.value = $('#prompt').textContent; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+    }
+    const btn = $('#copyBtn'); const old = btn.textContent;
+    btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = old; }, 1200);
+  });
+
+  updateAll();
+})();
+</script>
+</body>
+</html>

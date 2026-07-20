@@ -1,0 +1,139 @@
+/* === Orphaned panel (saved chats whose text is no longer on the page) = */
+
+.lenses-orphaned-panel {
+  --lenses-orphaned-ink: #0d0d0d;
+  --lenses-orphaned-text: #424242;
+  --lenses-orphaned-muted: #737373;
+  --lenses-orphaned-line: #e6e6e6;
+  --lenses-orphaned-line-soft: #f2f2f2;
+  --lenses-orphaned-paper: #ffffff;
+  --lenses-orphaned-paper-soft: #ffffff;
+  --lenses-orphaned-paper-warm: #fbfbfb;
+  --lenses-orphaned-accent: #2f6df6;
+  --lenses-orphaned-accent-strong: #2a62dd;
+  --lenses-orphaned-accent-soft: #eaf0fe;
+  --lenses-orphaned-shadow: rgba(0, 0, 0, 0.16);
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483646;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.lenses-orphaned-toggle {
+  appearance: none;
+  border: 1px solid var(--lenses-orphaned-line);
+  background: var(--lenses-orphaned-accent-soft);
+  color: var(--lenses-orphaned-accent-strong);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--lenses-radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px var(--lenses-orphaned-shadow);
+}
+
+.lenses-orphaned-toggle:hover {
+  background: var(--lenses-orphaned-paper-warm);
+}
+
+.lenses-orphaned-list {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--lenses-orphaned-paper);
+  border: 1px solid var(--lenses-orphaned-line);
+  border-radius: var(--lenses-radius-lg);
+  box-shadow: 0 12px 34px var(--lenses-orphaned-shadow);
+  padding: 6px;
+  min-width: 260px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lenses-orphaned-item {
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: var(--lenses-radius-md);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 2px 4px;
+  align-items: start;
+}
+
+.lenses-orphaned-item:hover {
+  background: var(--lenses-orphaned-paper-soft);
+}
+
+.lenses-orphaned-item-open {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.lenses-orphaned-item-open:focus-visible,
+.lenses-orphaned-item-delete:focus-visible {
+  outline: 2px solid var(--lenses-orphaned-accent);
+  outline-offset: 2px;
+  border-radius: var(--lenses-radius-sm);
+}
+
+.lenses-orphaned-item-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lenses-orphaned-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.lenses-orphaned-item-snippet {
+  font-size: 11px;
+  color: var(--lenses-orphaned-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.lenses-orphaned-item-delete {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--lenses-orphaned-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+.lenses-orphaned-item-delete:hover {
+  color: #ef4444;
+}
+
+.lenses-orphaned-item-delete svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+

@@ -1,0 +1,964 @@
+.lenses-page-dock-root,
+.lenses-page-dock-root * {
+  box-sizing: border-box;
+  letter-spacing: 0;
+}
+
+.lenses-page-dock-root {
+  --lenses-dock-ink: #0d0d0d;
+  --lenses-dock-text: #424242;
+  --lenses-dock-muted: #737373;
+  --lenses-dock-line: #e6e6e6;
+  --lenses-dock-line-soft: #f2f2f2;
+  --lenses-dock-paper: #ffffff;
+  --lenses-dock-paper-soft: #ffffff;
+  --lenses-dock-paper-warm: #fbfbfb;
+  --lenses-dock-accent: #2f6df6;
+  --lenses-dock-accent-strong: #2a62dd;
+  --lenses-dock-accent-rule: #b0c8fc;
+  --lenses-dock-accent-soft: #eaf0fe;
+  --lenses-dock-accent-ring: rgba(47, 109, 246, 0.18);
+  --lenses-dock-shadow: rgba(0, 0, 0, 0.12);
+  --lenses-dock-surface-width: 216px;
+  --lenses-dock-menu-width: 176px;
+  --lenses-dock-surface-max-width: calc(100vw - 86px);
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--lenses-dock-ink);
+  color-scheme: light;
+  pointer-events: none;
+}
+
+.lenses-page-dock {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  animation: lenses-page-dock-in 0.16s ease-out;
+}
+
+.lenses-page-dock--collapsed {
+  display: block;
+}
+
+.lenses-page-dock--collapsed .lenses-page-dock-button {
+  border-right: 0;
+  border-radius: var(--lenses-radius-lg) 0 0 var(--lenses-radius-lg);
+}
+
+.lenses-page-dock-rail {
+  --lenses-page-dock-anchor-offset: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 6px 3px 6px 4px;
+  border-radius: 12px 0 0 12px;
+  border: 1px solid var(--lenses-dock-line);
+  border-right: 0;
+  background: var(--lenses-dock-paper);
+  box-shadow: 0 6px 18px var(--lenses-dock-shadow);
+  backdrop-filter: blur(10px);
+  transition: transform 0.18s ease;
+  pointer-events: none;
+}
+
+.lenses-page-dock--collapsed .lenses-page-dock-button,
+.lenses-page-dock-button {
+  appearance: none;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-md);
+  background: transparent;
+  color: var(--lenses-dock-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: none;
+  pointer-events: auto;
+  font: inherit;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease,
+    height 0.18s ease,
+    margin-top 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.lenses-page-dock-button:not(.is-tail) + .lenses-page-dock-button:not(.is-tail) {
+  margin-top: 4px;
+}
+
+.lenses-page-dock-rail .lenses-page-dock-button.is-tail {
+  height: 0;
+  min-height: 0;
+  border-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lenses-page-dock[data-source-panel-open="true"] .lenses-page-dock-rail {
+  display: none;
+}
+
+.lenses-page-dock-rail:hover .lenses-page-dock-button.is-tail,
+.lenses-page-dock-rail:focus-within .lenses-page-dock-button.is-tail,
+.lenses-page-dock[data-view="custom"] .lenses-page-dock-button.is-tail,
+.lenses-page-dock[data-view="dismiss"] .lenses-page-dock-button.is-tail {
+  height: 30px;
+  border-width: 1px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lenses-page-dock-rail:hover,
+.lenses-page-dock-rail:focus-within,
+.lenses-page-dock[data-view="custom"] .lenses-page-dock-rail,
+.lenses-page-dock[data-view="dismiss"] .lenses-page-dock-rail,
+.lenses-page-dock-panel,
+.lenses-page-dock-menu,
+.lenses-page-dock-toast {
+  pointer-events: auto;
+}
+
+.lenses-page-dock-rail:hover,
+.lenses-page-dock-rail:focus-within,
+.lenses-page-dock[data-view="custom"] .lenses-page-dock-rail,
+.lenses-page-dock[data-view="dismiss"] .lenses-page-dock-rail {
+  transform: translateY(calc(var(--lenses-page-dock-anchor-offset) * -1));
+}
+
+.lenses-page-dock-rail:hover .lenses-page-dock-button + .lenses-page-dock-button,
+.lenses-page-dock-rail:focus-within .lenses-page-dock-button + .lenses-page-dock-button,
+.lenses-page-dock[data-view="custom"] .lenses-page-dock-button + .lenses-page-dock-button,
+.lenses-page-dock[data-view="dismiss"] .lenses-page-dock-button + .lenses-page-dock-button {
+  margin-top: 4px;
+}
+
+.lenses-page-dock-button:hover {
+  border-color: var(--lenses-dock-line-soft);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-button:active {
+  background: var(--lenses-dock-paper-warm);
+}
+
+.lenses-page-dock-button:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 2px;
+}
+
+.lenses-page-dock-button:disabled {
+  cursor: wait;
+  opacity: 0.64;
+  transform: none;
+}
+
+.lenses-page-dock-button.is-active {
+  background: var(--lenses-dock-accent-soft);
+  border-color: var(--lenses-dock-accent-rule);
+  color: var(--lenses-dock-accent-strong);
+  box-shadow: inset 0 0 0 1px var(--lenses-dock-accent-ring);
+}
+
+.lenses-page-dock-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.lenses-page-dock-tooltip {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%) translateX(2px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 5px 8px;
+  border-radius: var(--lenses-radius-sm);
+  background: rgba(31, 41, 55, 0.94);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    opacity 0.06s ease,
+    transform 0.06s ease;
+}
+
+.lenses-page-dock-button:hover .lenses-page-dock-tooltip,
+.lenses-page-dock-button:focus-visible .lenses-page-dock-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.lenses-page-dock-button.is-active .lenses-page-dock-tooltip {
+  display: none;
+}
+
+.lenses-page-dock-panel {
+  width: min(var(--lenses-dock-surface-width), var(--lenses-dock-surface-max-width));
+  border: 1px solid var(--lenses-dock-line);
+  border-radius: var(--lenses-radius-lg);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-ink);
+  box-shadow: 0 12px 34px var(--lenses-dock-shadow);
+  padding: 8px;
+}
+
+.lenses-page-dock-toast {
+  position: absolute;
+  right: 46px;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(var(--lenses-dock-surface-width), var(--lenses-dock-surface-max-width));
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--lenses-dock-line);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-text);
+  box-shadow: 0 10px 28px var(--lenses-dock-shadow);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  pointer-events: auto;
+  animation: lenses-page-dock-toast-in 0.14s ease-out;
+}
+
+.lenses-page-dock-toast-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--lenses-radius-round);
+  background: var(--lenses-dock-accent);
+  flex: 0 0 auto;
+}
+
+.lenses-page-dock-toast-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lenses-page-dock-menu {
+  width: min(var(--lenses-dock-menu-width), var(--lenses-dock-surface-max-width));
+  border: 1px solid var(--lenses-dock-line);
+  border-radius: var(--lenses-radius-lg);
+  background: var(--lenses-dock-paper);
+  color: var(--lenses-dock-ink);
+  box-shadow: 0 14px 36px var(--lenses-dock-shadow);
+  overflow: hidden;
+}
+
+.lenses-page-dock-menu-item {
+  appearance: none;
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  border-bottom: 1px solid var(--lenses-dock-line-soft);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.lenses-page-dock-menu-item:last-child {
+  border-bottom: 0;
+}
+
+.lenses-page-dock-menu-item:hover,
+.lenses-page-dock-menu-item[data-highlighted] {
+  background: var(--lenses-dock-paper-soft);
+  outline: none;
+}
+
+.lenses-page-dock-menu-item:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: -2px;
+}
+
+.lenses-page-dock-menu-icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: var(--lenses-dock-muted);
+}
+
+.lenses-page-dock-toast[data-kind="success"] {
+  color: #047857;
+}
+
+.lenses-page-dock-toast[data-kind="success"] .lenses-page-dock-toast-dot {
+  background: #10b981;
+}
+
+.lenses-page-dock-toast[data-kind="empty"] {
+  color: #9a3412;
+}
+
+.lenses-page-dock-toast[data-kind="empty"] .lenses-page-dock-toast-dot {
+  background: #f59e0b;
+}
+
+.lenses-page-dock-toast[data-kind="error"] {
+  color: #b91c1c;
+}
+
+.lenses-page-dock-toast[data-kind="error"] .lenses-page-dock-toast-dot {
+  background: #ef4444;
+}
+
+.lenses-page-dock-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  padding: 2px 2px 10px;
+  color: var(--lenses-dock-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.lenses-page-dock-panel-edit {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-sm);
+  background: transparent;
+  color: var(--lenses-dock-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.lenses-page-dock-panel-edit:hover {
+  border-color: var(--lenses-dock-line-soft);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-panel-edit:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 1px;
+}
+
+.lenses-page-dock-panel-edit .lenses-page-dock-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.lenses-page-dock-lens-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  /* Bound height so adding many pinned/custom lenses doesn't push the panel
+     off-screen. clamp() keeps the cap reasonable across viewports: at least
+     ~5 pill rows on small windows, never taller than 360px even on large
+     ones, and ideally ~45% of viewport height in between. overflow-y: auto
+     means the scrollbar only appears when content actually exceeds the cap
+     — no scrollbar when the user only has a few lenses. */
+  max-height: clamp(180px, 45vh, 360px);
+  overflow-y: auto;
+
+  /* Hover-reveal scrollbar: invisible by default so it doesn't compete with
+     the pill visuals; fades in only when the user mouses over the list.
+     scrollbar-color is the modern (Firefox) property; ::-webkit-scrollbar
+     covers Chrome/Edge/Safari. The transition runs on a custom property so
+     both color values animate together rather than blinking.
+
+     -webkit-scrollbar-track stays transparent in both states so we don't
+     add a visible "groove" inside the dark dock panel. */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.18s ease;
+}
+
+.lenses-page-dock-lens-list:hover,
+.lenses-page-dock-lens-list:focus-within {
+  scrollbar-color: color-mix(
+      in srgb,
+      var(--lenses-dock-muted, #888) 55%,
+      transparent
+    )
+    transparent;
+}
+
+.lenses-page-dock-lens-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lenses-page-dock-lens-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lenses-page-dock-lens-list::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 999px;
+  transition: background-color 0.18s ease;
+}
+
+.lenses-page-dock-lens-list:hover::-webkit-scrollbar-thumb,
+.lenses-page-dock-lens-list:focus-within::-webkit-scrollbar-thumb {
+  background-color: color-mix(
+    in srgb,
+    var(--lenses-dock-muted, #888) 55%,
+    transparent
+  );
+}
+
+.lenses-page-dock-lens-list::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--lenses-dock-muted, #888) 80%,
+    transparent
+  );
+}
+
+.lenses-page-dock-lens-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lenses-page-dock-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lenses-page-dock-result-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid var(--lenses-dock-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-dock-paper-soft);
+}
+
+.lenses-page-dock-result-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lenses-page-dock-result-name {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--lenses-dock-ink);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.lenses-page-dock-result-count {
+  flex: 0 0 auto;
+  color: var(--lenses-dock-muted);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.lenses-page-dock-result-clear {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-sm);
+  background: transparent;
+  color: var(--lenses-dock-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.lenses-page-dock-result-clear:hover {
+  border-color: var(--lenses-dock-line-soft);
+  background: var(--lenses-dock-paper-warm);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-result-clear:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 1px;
+}
+
+.lenses-page-dock-result-clear .lenses-page-dock-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.lenses-page-dock-result-modes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.lenses-page-dock-result-mode {
+  appearance: none;
+  min-width: 0;
+  min-height: 24px;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-sm);
+  background: transparent;
+  color: var(--lenses-dock-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.lenses-page-dock-result-mode:hover {
+  border-color: var(--lenses-dock-line-soft);
+  background: var(--lenses-dock-paper-warm);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-result-mode.is-active {
+  border-color: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 62%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 18%,
+    transparent
+  );
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-result-mode:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 1px;
+}
+
+.lenses-page-dock-lens-user-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--lenses-dock-line-soft);
+}
+
+.lenses-page-dock-lens-pill {
+  appearance: none;
+  isolation: isolate;
+  position: relative;
+  min-width: 0;
+  min-height: 28px;
+  border: 1px solid var(--lenses-dock-line-soft);
+  border-radius: var(--lenses-radius-pill);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow: visible;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.15;
+  user-select: none;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.lenses-page-dock-lens-pill
+  > span:not(.lenses-page-dock-dot):not(.lenses-page-dock-pin) {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Pin affordance attached to each lens pill. Hidden until hover (or always
+   visible when the lens is pinned for the current domain), takes only the
+   space its 12px icon needs. Click is handled in JS via stopPropagation so
+   the parent Checkbox.Root doesn't also fire its toggle. */
+.lenses-page-dock-pin {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  margin-right: -2px;
+  border-radius: 999px;
+  color: var(--lenses-dock-muted);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.lenses-page-dock-pin svg {
+  width: 12px;
+  height: 12px;
+}
+
+.lenses-page-dock-lens-pill:hover .lenses-page-dock-pin,
+.lenses-page-dock-pin:focus-visible,
+.lenses-page-dock-pin.is-pinned {
+  opacity: 1;
+}
+
+.lenses-page-dock-pin:hover {
+  color: var(--lenses-dock-ink);
+  background: color-mix(in srgb, var(--lenses-dock-ink) 8%, transparent);
+}
+
+.lenses-page-dock-pin.is-pinned {
+  color: var(
+    --lenses-dock-lens-accent,
+    var(--lenses-dock-accent)
+  );
+}
+
+.lenses-page-dock-pin:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 1px;
+}
+
+.lenses-page-dock-lens-pill:hover {
+  border-color: var(--lenses-dock-accent-rule);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-lens-pill.is-selected {
+  border-color: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 62%,
+    transparent
+  );
+  color: var(--lenses-dock-ink);
+  box-shadow: none;
+}
+
+.lenses-page-dock-lens-pill.is-computed {
+  background: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 20%,
+    var(--lenses-dock-paper-soft)
+  );
+}
+
+.lenses-page-dock-lens-pill:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 1px;
+}
+
+.lenses-page-dock-run {
+  appearance: none;
+  align-self: flex-end;
+  min-height: 28px;
+  border: 1px solid var(--lenses-dock-line-soft);
+  border-radius: var(--lenses-radius-pill);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  padding: 0 12px;
+}
+
+.lenses-page-dock-run:hover:not(:disabled) {
+  border-color: var(--lenses-dock-accent-rule);
+  color: var(--lenses-dock-ink);
+}
+
+.lenses-page-dock-run:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 2px;
+}
+
+.lenses-page-dock-run:disabled {
+  cursor: not-allowed;
+  border-color: var(--lenses-dock-line);
+  background: transparent;
+  color: var(--lenses-dock-muted);
+}
+
+.lenses-page-dock-empty {
+  border: 1px solid var(--lenses-dock-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-muted);
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.lenses-page-dock-lens-row {
+  appearance: none;
+  position: relative;
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-pill);
+  background: transparent;
+  color: var(--lenses-dock-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.25;
+  overflow: hidden;
+  text-align: left;
+}
+
+.lenses-page-dock-lens-row:hover {
+  background: var(--lenses-dock-paper-soft);
+}
+
+.lenses-page-dock-lens-row.is-selected {
+  border-color: var(--lenses-dock-accent);
+  background: var(--lenses-dock-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--lenses-dock-accent);
+}
+
+.lenses-page-dock-lens-row:focus-visible {
+  outline: 2px solid var(--lenses-dock-accent-ring);
+  outline-offset: 2px;
+}
+
+.lenses-page-dock-lens-row:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.lenses-page-dock-lens-row > span:not(.lenses-page-dock-dot) {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lenses-page-dock-dot {
+  position: relative;
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--lenses-radius-pill);
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 2px var(--lenses-dock-paper-soft);
+}
+
+.lenses-page-dock-lens-pill.is-computing,
+.lenses-page-dock-lens-row.is-computing {
+  border-color: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 62%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 24%,
+    var(--lenses-dock-paper-soft)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(
+    in srgb,
+    var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 26%,
+    transparent
+  );
+  animation: lenses-page-dock-surface-breathe 1s ease-in-out infinite;
+}
+
+.lenses-page-dock-lens-pill.is-settling,
+.lenses-page-dock-lens-row.is-settling {
+  animation: none;
+  transition:
+    background-color 0.42s ease,
+    border-color 0.42s ease,
+    box-shadow 0.42s ease,
+    color 0.18s ease;
+}
+
+.lenses-page-dock-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lenses-page-dock-custom textarea {
+  width: 100%;
+  min-height: 84px;
+  resize: none;
+  border: 1px solid var(--lenses-dock-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-dock-paper-soft);
+  color: var(--lenses-dock-ink);
+  padding: 10px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+.lenses-page-dock-custom textarea::placeholder {
+  color: var(--lenses-dock-muted);
+}
+
+.lenses-page-dock-custom textarea:focus {
+  border-color: var(--lenses-dock-accent);
+  box-shadow: inset 0 0 0 1px var(--lenses-dock-accent-ring);
+  outline: none;
+}
+
+.lenses-page-dock-custom textarea:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@keyframes lenses-page-dock-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes lenses-page-dock-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes lenses-page-dock-surface-breathe {
+  0%,
+  100% {
+    border-color: color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 42%,
+      transparent
+    );
+    background-color: color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 6%,
+      var(--lenses-dock-paper-soft)
+    );
+    box-shadow: inset 0 0 0 1px color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 12%,
+      transparent
+    );
+  }
+  50% {
+    border-color: color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 100%,
+      transparent
+    );
+    background-color: color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 48%,
+      var(--lenses-dock-paper-soft)
+    );
+    box-shadow: inset 0 0 0 1px color-mix(
+      in srgb,
+      var(--lenses-dock-lens-accent, var(--lenses-dock-accent)) 58%,
+      transparent
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lenses-page-dock-lens-pill.is-computing,
+  .lenses-page-dock-lens-row.is-computing {
+    animation-duration: 2.4s;
+  }
+}
+
+@media (max-width: 480px) {
+  .lenses-page-dock-root {
+    right: 0;
+    --lenses-dock-surface-max-width: calc(100vw - 72px);
+  }
+
+  .lenses-page-dock {
+    gap: 6px;
+  }
+
+  .lenses-page-dock-toast {
+    right: 40px;
+  }
+
+  .lenses-page-dock-button {
+    width: 30px;
+    height: 30px;
+  }
+}

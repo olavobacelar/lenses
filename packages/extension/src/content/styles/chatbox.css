@@ -1,0 +1,1759 @@
+.lenses-chatbox {
+  --lenses-chat-ink: #0d0d0d;
+  --lenses-chat-text: #424242;
+  --lenses-chat-muted: #737373;
+  --lenses-chat-line: #e6e6e6;
+  --lenses-chat-line-soft: #f2f2f2;
+  --lenses-chat-paper: #ffffff;
+  --lenses-chat-paper-soft: #ffffff;
+  --lenses-chat-paper-warm: #fbfbfb;
+  --lenses-chat-accent: #2f6df6;
+  --lenses-chat-accent-strong: #2a62dd;
+  --lenses-chat-accent-rule: #b0c8fc;
+  --lenses-chat-accent-soft: #eaf0fe;
+  --lenses-chat-accent-ring: rgba(47, 109, 246, 0.18);
+  --lenses-chat-shadow: rgba(0, 0, 0, 0.18);
+  --lenses-chat-send-bg: #1a1a1a;
+  --lenses-chat-send-bg-hover: #000000;
+  --lenses-chat-send-ink: #ffffff;
+  /* User message bubble: a neutral gray lift, not an accent fill — mirrors the
+     sidepanel's --user-bubble-* (dark override in dark-theme.css). */
+  --lenses-chat-user-bubble-bg: #ededed;
+  --lenses-chat-user-bubble-ink: var(--lenses-chat-ink);
+  --lenses-chat-composer-placeholder: var(--lenses-chat-muted);
+  --lenses-chat-composer-send-size: 30px;
+  --lenses-chat-composer-font-size: 13px;
+  --lenses-chat-composer-line-height: 1.45;
+  width: min(500px, calc(100vw - 16px));
+  max-height: min(360px, calc(100vh - 16px));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 10px;
+  border-radius: var(--lenses-radius-lg);
+  border: 1px solid var(--lenses-chat-line);
+  background: var(--lenses-chat-paper);
+  box-shadow: 0 12px 34px var(--lenses-chat-shadow);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--lenses-chat-ink);
+  color-scheme: light;
+  animation: lenses-chatbox-in 0.15s ease-out;
+}
+
+@keyframes lenses-chatbox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lenses-chatbox-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--lenses-chat-line-soft);
+}
+
+.lenses-chatbox-header-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.lenses-chatbox-header-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lenses-chatbox-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lenses-chat-accent);
+  line-height: 1;
+}
+
+.lenses-chatbox-subtitle {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chatbox-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.lenses-chatbox-close,
+.lenses-chatbox-delete {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--lenses-chat-muted);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: var(--lenses-radius-md);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.lenses-chatbox-close:hover,
+.lenses-chatbox-delete:hover {
+  border-color: var(--lenses-chat-line-soft);
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-ink);
+}
+
+.lenses-chatbox-delete:hover {
+  color: #b91c1c;
+}
+
+.lenses-chatbox-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lenses-chatbox-top-row--close-only {
+  justify-content: flex-end;
+}
+
+.lenses-chatbox-context-list,
+.lenses-chatbox-annotation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.lenses-chatbox-selection-card {
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-left: 4px solid var(--lenses-chat-accent-rule);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+  padding: 7px 8px;
+}
+
+/* INTERNAL_TOOLS_START */
+.lenses-chatbox-debug-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lenses-chatbox-debug-btn {
+  border: 1px solid var(--lenses-chat-accent-rule);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-accent-strong);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+
+.lenses-chatbox-debug-btn:hover {
+  background: var(--lenses-chat-paper-warm);
+}
+/* INTERNAL_TOOLS_END */
+
+.lenses-chatbox-annotation-row {
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-left: 4px solid var(--lenses-chat-muted);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-paper);
+  color: var(--lenses-chat-ink);
+  text-align: left;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+
+.lenses-chatbox-annotation-row:hover {
+  background: var(--lenses-chat-paper-soft);
+}
+
+.lenses-chatbox-annotation-row.active {
+  border-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-accent-soft);
+}
+
+.lenses-chatbox-annotation-row:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.lenses-chatbox-annotation-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.lenses-chatbox-annotation-label {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lenses-chatbox-annotation-confidence {
+  font-size: 11px;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chatbox-annotation-detail {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--lenses-chat-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Registered so the scroll-edge fades can transition as a length; an unregistered
+   custom property would snap between 0 and its target instead of easing. */
+@property --lenses-chat-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --lenses-chat-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.lenses-chatbox-messages {
+  min-height: 96px;
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Reserve scrollbar space so the layout doesn't shift when content
+     overflows, and the right edge of full-width children (like the
+     Thinking <details>) doesn't visually clash with the scrollbar. */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lenses-chat-line) transparent;
+  padding: 6px 4px 6px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  /* Soft scroll edges: past messages dissolve into the panel as they meet the
+     header above and the composer below instead of being hard-clipped. Each fade
+     is only armed when content is actually hidden in that direction (data
+     attributes set in content.ts), so a short, non-scrolling log shows none. */
+  --lenses-chat-fade-top: 0px;
+  --lenses-chat-fade-bottom: 0px;
+  transition: --lenses-chat-fade-top 0.15s ease, --lenses-chat-fade-bottom 0.15s ease;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--lenses-chat-fade-top),
+    #000 calc(100% - var(--lenses-chat-fade-bottom)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--lenses-chat-fade-top),
+    #000 calc(100% - var(--lenses-chat-fade-bottom)),
+    transparent 100%
+  );
+}
+
+/* The newest reply is auto-scrolled to the bottom, so the bottom fade is kept
+   shorter than the top to avoid dimming the line the reader is on. */
+.lenses-chatbox-messages[data-overflow-top="true"] {
+  --lenses-chat-fade-top: 22px;
+}
+
+.lenses-chatbox-messages[data-overflow-bottom="true"] {
+  --lenses-chat-fade-bottom: 14px;
+}
+
+.lenses-chatbox-messages:empty {
+  min-height: 72px;
+}
+
+.lenses-chatbox-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lenses-chatbox-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lenses-chatbox-messages::-webkit-scrollbar-thumb {
+  background: var(--lenses-chat-line);
+  border-radius: 3px;
+}
+
+.lenses-chat-message {
+  max-width: 95%;
+  border-radius: var(--lenses-radius-md);
+  padding: 8px 10px;
+  /* Matches sidepanel `.message` (sidepanel.css). Explicit weight/spacing
+     prevents the host page (Wikipedia, Substack, etc.) from cascading a
+     bolder default into the injected DOM. */
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: normal;
+  white-space: pre-wrap;
+}
+
+.lenses-chat-message-frame {
+  max-width: 95%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lenses-chat-message-frame.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.lenses-chat-message-frame.assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.lenses-chat-message-frame .lenses-chat-message {
+  max-width: 100%;
+}
+
+.lenses-chat-turn {
+  align-self: stretch;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 3px;
+}
+
+.lenses-chat-turn .lenses-chat-message {
+  max-width: 100%;
+}
+
+.lenses-chat-message.markdown {
+  white-space: normal;
+}
+
+.lenses-chat-message.markdown > :first-child {
+  margin-top: 0;
+}
+
+.lenses-chat-message.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.lenses-chat-message.markdown p {
+  margin: 0 0 8px;
+}
+
+.lenses-chat-message.markdown h1,
+.lenses-chat-message.markdown h2,
+.lenses-chat-message.markdown h3,
+.lenses-chat-message.markdown h4,
+.lenses-chat-message.markdown h5,
+.lenses-chat-message.markdown h6 {
+  margin: 0 0 8px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.lenses-chat-message.markdown h1 {
+  font-size: 16px;
+}
+
+.lenses-chat-message.markdown h2 {
+  font-size: 15px;
+}
+
+.lenses-chat-message.markdown h3,
+.lenses-chat-message.markdown h4,
+.lenses-chat-message.markdown h5,
+.lenses-chat-message.markdown h6 {
+  font-size: 13px;
+}
+
+.lenses-chat-message.markdown ul,
+.lenses-chat-message.markdown ol {
+  margin: 0 0 8px 18px;
+  padding: 0;
+}
+
+.lenses-chat-message.markdown li + li {
+  margin-top: 2px;
+}
+
+.lenses-chat-message.markdown pre {
+  margin: 0 0 8px;
+  padding: 8px;
+  border-radius: var(--lenses-radius-sm);
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-ink);
+  overflow-x: auto;
+}
+
+.lenses-chat-message.markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 11px;
+}
+
+.lenses-chat-message.markdown :not(pre) > code {
+  background: var(--lenses-chat-paper-soft);
+  border-radius: var(--lenses-radius-xs);
+  padding: 1px 4px;
+}
+
+.lenses-chat-message.markdown blockquote {
+  margin: 0 0 8px;
+  padding: 0 0 0 8px;
+  border-left: 3px solid var(--lenses-chat-accent-rule);
+  color: var(--lenses-chat-text);
+}
+
+.lenses-chat-message.markdown a {
+  color: var(--lenses-chat-accent-strong);
+  text-decoration: underline;
+}
+
+.lenses-chat-message.user {
+  align-self: flex-end;
+  background: var(--lenses-chat-user-bubble-bg);
+  color: var(--lenses-chat-user-bubble-ink);
+}
+
+.lenses-chat-message.user.implicit {
+  border: 1px dashed var(--lenses-chat-muted);
+  opacity: 0.92;
+}
+
+.lenses-chat-message.assistant {
+  align-self: flex-start;
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-ink);
+}
+
+.lenses-chat-message.assistant.streaming,
+.lenses-chat-message.assistant.plain {
+  white-space: pre-wrap;
+}
+
+.lenses-chat-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.lenses-chat-verdict,
+.lenses-chat-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid var(--lenses-chat-line);
+  border-radius: var(--lenses-radius-pill);
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-text);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.lenses-chat-verdict--true {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.lenses-chat-verdict--false {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.lenses-chat-verdict--mixed {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.lenses-chat-verdict--unverifiable {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  color: #4b5563;
+}
+
+.lenses-chat-message.error {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.lenses-chat-message-action {
+  width: fit-content;
+  min-height: 28px;
+  margin-top: 2px;
+  padding: 0 10px;
+  border: 1px solid #fecdd3;
+  border-radius: var(--lenses-radius-md);
+  color: #9f1239;
+  background: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lenses-chat-message-action:hover {
+  border-color: #fb7185;
+  background: #fff7f8;
+}
+
+.lenses-chat-message-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 1px;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chat-message-tool {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--lenses-radius-sm);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.lenses-chat-message-tool .lenses-chatbox-action-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.lenses-chat-message-tool:hover:not(:disabled) {
+  color: var(--lenses-chat-ink);
+  background: var(--lenses-chat-paper-soft);
+  border-color: var(--lenses-chat-line-soft);
+}
+
+.lenses-chat-message-tool:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lenses-chat-selection-insert {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -100%);
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--lenses-chat-accent-rule);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-accent-soft);
+  box-shadow: 0 8px 22px var(--lenses-chat-shadow);
+  color: var(--lenses-chat-accent-strong);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
+}
+
+.lenses-chat-selection-insert-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.lenses-chat-selection-insert:hover {
+  border-color: var(--lenses-chat-accent-rule);
+  background: var(--lenses-chat-paper-warm);
+  color: var(--lenses-chat-accent-strong);
+  box-shadow:
+    0 8px 22px var(--lenses-chat-shadow),
+    inset 0 0 0 1px var(--lenses-chat-accent-ring);
+  transform: translate(-50%, calc(-100% - 1px));
+}
+
+.lenses-chat-loading {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--lenses-chat-muted);
+  padding: 4px 2px;
+}
+
+.lenses-chat-activity {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2px 0 10px;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chat-activity-step {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+.lenses-chat-activity-step:not(:last-of-type)::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 22px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--lenses-chat-line-soft);
+}
+
+.lenses-chat-activity-marker {
+  width: 17px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chat-activity-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.85;
+}
+
+/* The step marker carries the type icon now, so drop the websearch block's own
+   header globe inside the timeline to avoid a doubled glyph. */
+.lenses-chat-activity .lenses-websearch-icon {
+  display: none;
+}
+
+.lenses-chat-activity-body {
+  min-width: 0;
+  padding-bottom: 10px;
+}
+
+/* A "thinking" indicator should recede, not compete with the actual answer.
+   Muted grays, smaller type, no alert-blue palette. */
+.lenses-chat-thinking {
+  align-self: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-text);
+  padding: 5px 10px;
+  min-height: 28px;
+  overflow: visible;
+}
+
+.lenses-chat-thinking[open] {
+  background: var(--lenses-chat-paper-warm);
+}
+
+.lenses-chat-thinking summary {
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lenses-chat-muted);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 16px;
+  line-height: 1.2;
+  user-select: none;
+}
+
+.lenses-chat-thinking summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron that rotates on open */
+.lenses-chat-thinking summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid currentColor;
+  transition: transform 0.15s ease;
+}
+
+.lenses-chat-thinking[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.lenses-chat-thinking-content {
+  margin: 8px 0 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  overflow-x: hidden;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--lenses-chat-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lenses-chat-line) transparent;
+}
+
+.lenses-chat-thinking-content::-webkit-scrollbar {
+  width: 4px;
+  height: 0px;
+}
+
+.lenses-chat-thinking-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lenses-chat-thinking-content::-webkit-scrollbar-thumb {
+  background: var(--lenses-chat-line);
+  border-radius: 2px;
+}
+
+.lenses-chat-searching {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--lenses-chat-accent-strong);
+  background: var(--lenses-chat-accent-soft);
+  border: 1px solid var(--lenses-chat-accent-rule);
+  border-radius: var(--lenses-radius-md);
+  padding: 4px 8px;
+}
+
+/* Grouped web searches ("Searched the web"). Mirrors the thinking disclosure. */
+.lenses-websearch {
+  align-self: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-text);
+  padding: 5px 10px;
+}
+
+.lenses-websearch[open],
+.lenses-websearch.is-live {
+  background: var(--lenses-chat-paper-warm);
+}
+
+.lenses-websearch-trigger {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.lenses-websearch-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.lenses-websearch-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lenses-chat-muted);
+  min-height: 16px;
+  line-height: 1.2;
+}
+
+.lenses-websearch-trigger .lenses-websearch-summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid currentColor;
+  transition: transform 0.15s ease;
+}
+
+.lenses-websearch[open] .lenses-websearch-summary::before {
+  transform: rotate(90deg);
+}
+
+.lenses-websearch-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.75;
+}
+
+.lenses-websearch-count {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.lenses-websearch-list {
+  margin: 8px 0 2px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lenses-websearch-query-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lenses-websearch-query {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lenses-chat-ink);
+  overflow-wrap: anywhere;
+}
+
+.lenses-websearch-group.is-pending .lenses-websearch-query {
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-websearch-result-count {
+  font-size: 10px;
+  color: var(--lenses-chat-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lenses-websearch-results {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lenses-websearch-result-link {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  text-decoration: none;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.lenses-websearch-result-title {
+  font-size: 11px;
+  color: var(--lenses-chat-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lenses-websearch-result-domain {
+  font-size: 10px;
+  color: var(--lenses-chat-muted);
+  flex-shrink: 0;
+}
+
+.lenses-websearch-result-link:hover .lenses-websearch-result-title {
+  color: var(--lenses-chat-accent);
+}
+
+.lenses-chat-activity .lenses-chat-thinking,
+.lenses-chat-activity .lenses-websearch {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.lenses-chat-activity .lenses-chat-thinking[open],
+.lenses-chat-activity .lenses-websearch[open],
+.lenses-chat-activity .lenses-websearch.is-live {
+  background: transparent;
+}
+
+.lenses-chat-activity .lenses-chat-thinking summary,
+.lenses-chat-activity .lenses-websearch-summary {
+  min-height: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chat-activity .lenses-chat-thinking summary {
+  justify-content: flex-start;
+}
+
+.lenses-chat-activity .lenses-chat-thinking summary::before,
+.lenses-chat-activity .lenses-websearch-trigger .lenses-websearch-summary::before {
+  display: none;
+}
+
+.lenses-chat-activity .lenses-chat-thinking summary::after,
+.lenses-chat-activity .lenses-websearch-trigger .lenses-websearch-summary::after {
+  content: "›";
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.lenses-chat-activity .lenses-chat-thinking[open] summary::after,
+.lenses-chat-activity .lenses-websearch[open] .lenses-websearch-summary::after {
+  transform: rotate(90deg);
+}
+
+/* Reasoning trace: a gutter glyph to the left of the thought text, revealed
+   only when the disclosure opens. The row owns the top spacing so the icon and
+   the first text line share a baseline. */
+.lenses-chat-thinking-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.lenses-chat-thinking-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  opacity: 0.7;
+  color: var(--lenses-chat-muted);
+}
+
+.lenses-chat-activity .lenses-chat-thinking-row {
+  margin: 8px 0 0;
+}
+
+.lenses-chat-activity .lenses-chat-thinking-row .lenses-chat-thinking-content {
+  margin: 0;
+  padding: 0 0 0 2px;
+  color: var(--lenses-chat-text);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.lenses-chat-activity .lenses-websearch-list {
+  margin: 8px 0 0;
+  max-height: 150px;
+  overflow: auto;
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-radius: var(--lenses-radius-md);
+  background: color-mix(in srgb, var(--lenses-chat-paper-soft) 84%, transparent);
+  padding: 8px;
+}
+
+.lenses-chat-activity .lenses-websearch-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.lenses-chat-activity .lenses-websearch-count {
+  margin-left: auto;
+}
+
+.lenses-chat-message a.citation-badge,
+.lenses-source-callout-answer a.citation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--lenses-chat-paper-soft, #f3f4f6);
+  border: 1px solid var(--lenses-chat-line-soft, #e5e7eb);
+  border-radius: var(--lenses-radius-sm);
+  padding: 1px 6px 1px 4px;
+  margin: 0 2px;
+  max-width: 180px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-decoration: none;
+  color: var(--lenses-chat-text, #4b5563);
+  vertical-align: middle;
+  position: relative;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.lenses-chat-message a.citation-badge:hover,
+.lenses-source-callout-answer a.citation-badge:hover {
+  background: var(--lenses-chat-paper-warm, #e5e7eb);
+  border-color: var(--lenses-chat-line, #d1d5db);
+  color: var(--lenses-chat-ink, #111827);
+  text-decoration: none;
+}
+
+.citation-badge-favicon {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.citation-source {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.citation-tooltip {
+  display: none !important;
+}
+
+.lenses-floating-citation-tooltip {
+  position: fixed;
+  display: none;
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: var(--lenses-radius-lg);
+  padding: 10px;
+  width: min(280px, calc(100vw - 16px));
+  max-height: min(260px, calc(100vh - 16px));
+  overflow-y: auto;
+  z-index: 2147483647;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+  pointer-events: none;
+  overflow-wrap: anywhere;
+}
+
+.lenses-floating-citation-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  background: #0f172a;
+  border-right: 1px solid #334155;
+  border-bottom: 1px solid #334155;
+}
+
+.lenses-floating-citation-tooltip[data-placement="top"]::after {
+  top: calc(100% - 5px);
+}
+
+.lenses-floating-citation-tooltip[data-placement="bottom"]::after {
+  top: -6px;
+  transform: translateX(-50%) rotate(225deg);
+}
+
+.citation-tooltip-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.citation-tooltip-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.citation-tooltip-source img {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.citation-tooltip-quote {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #94a3b8;
+}
+
+.lenses-chatbox-form {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  border: 1px solid var(--lenses-chat-line);
+  border-radius: var(--lenses-radius-lg);
+  padding: 8px;
+  background: var(--lenses-chat-paper);
+  transition: border-color 0.2s ease;
+}
+
+.lenses-chatbox-form:focus-within {
+  border-color: var(--lenses-chat-accent);
+}
+
+.lenses-chatbox-input {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent !important;
+  color: var(--lenses-chat-ink) !important;
+  -webkit-text-fill-color: var(--lenses-chat-ink);
+  font-family: inherit;
+  font-size: var(--lenses-chat-composer-font-size);
+  line-height: var(--lenses-chat-composer-line-height);
+  resize: none;
+  field-sizing: content;
+  height: auto;
+  min-height: 40px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.lenses-chatbox-input::placeholder {
+  color: var(--lenses-chat-composer-placeholder);
+}
+
+.lenses-chatbox-input:hover:not(:disabled) {
+  background-color: transparent !important;
+}
+
+.lenses-chatbox-input:focus {
+  background-color: transparent !important;
+  box-shadow: none;
+}
+
+.lenses-chatbox-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: var(--lenses-chat-composer-send-size);
+}
+
+.lenses-chatbox-send {
+  width: var(--lenses-chat-composer-send-size);
+  height: var(--lenses-chat-composer-send-size);
+  min-height: var(--lenses-chat-composer-send-size);
+  flex: 0 0 auto;
+  align-self: center;
+  border: 0;
+  border-radius: var(--lenses-radius-round);
+  background: var(--lenses-chat-send-bg);
+  color: var(--lenses-chat-send-ink);
+  display: inline-grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.12s ease, opacity 0.12s ease;
+}
+
+.lenses-chatbox-send-icon {
+  /* 16px lets the SVG glyph occupy roughly the same proportion of the
+     30×30 button as the unicode ↑ does at font-size 15px in the sidepanel
+     send (.c2-send). Thinner SVG stroke needs more area to read as equal. */
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.lenses-chatbox-send:hover:not(:disabled) {
+  background: var(--lenses-chat-send-bg-hover);
+}
+
+.lenses-chatbox-input:disabled {
+  color: var(--lenses-chat-muted) !important;
+  -webkit-text-fill-color: var(--lenses-chat-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.lenses-chatbox-send:disabled {
+  background: var(--lenses-chat-line);
+  color: var(--lenses-chat-muted);
+  cursor: not-allowed;
+}
+
+/* === Detached content chatbox ========================================== */
+
+.lenses-chatbox--detached {
+  width: min(600px, calc(100vw - 16px));
+  min-height: min(560px, calc(100vh - 16px));
+  max-height: min(640px, calc(100vh - 16px));
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--lenses-radius-xl);
+}
+
+.lenses-chatbox--selection {
+  width: min(680px, calc(100vw - 16px));
+  min-height: min(720px, calc(100vh - 16px));
+  max-height: min(800px, calc(100vh - 16px));
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--lenses-radius-xl);
+}
+
+.lenses-chatbox--detached .lenses-chatbox-header,
+.lenses-chatbox--selection .lenses-chatbox-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--lenses-chat-line-soft);
+}
+
+.lenses-chatbox--detached .lenses-chatbox-header-text,
+.lenses-chatbox--selection .lenses-chatbox-header-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-eyebrow,
+.lenses-chatbox--selection .lenses-chatbox-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lenses-chat-accent);
+  line-height: 1;
+}
+
+.lenses-chatbox--selection .lenses-chatbox-context-list {
+  flex: 0 1 auto;
+  max-height: min(280px, 40vh);
+}
+
+.lenses-chatbox-selection-quote {
+  margin: 0;
+  padding: 0;
+  border-left: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--lenses-chat-ink);
+  max-height: min(240px, 36vh);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lenses-chat-line) transparent;
+  overflow-wrap: anywhere;
+}
+
+/* Reference markers like [1] in headlines are informational but should not
+   compete with the title. Render them as small muted superscript pills. */
+.lenses-quote-ref {
+  display: inline-block;
+  vertical-align: super;
+  margin: 0 1px;
+  padding: 0 4px;
+  min-width: 13px;
+  height: 13px;
+  line-height: 13px;
+  text-align: center;
+  border-radius: 3px;
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-accent-strong);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-messages,
+.lenses-chatbox--selection .lenses-chatbox-messages {
+  flex: 1 1 300px;
+  min-height: 0;
+  max-height: none;
+  padding: 2px 0 0;
+  gap: 4px;
+}
+
+/* Detached chatboxes render assistant responses as flat prose flush with the
+   content edges, not as gray bubbles. The user message remains a bubble to
+   clearly distinguish the question from the answer. */
+/* Tighter turn gap — the thinking toggle and the prose are
+   visually one unit, not two loosely stacked cards. */
+.lenses-chatbox--detached .lenses-chat-turn,
+.lenses-chatbox--selection .lenses-chat-turn {
+  gap: 4px;
+  padding-top: 0;
+}
+
+.lenses-chatbox--detached .lenses-chat-message-frame.assistant,
+.lenses-chatbox--selection .lenses-chat-message-frame.assistant {
+  align-self: stretch;
+  align-items: stretch;
+  max-width: 100%;
+  gap: 4px;
+  padding-top: 0;
+}
+
+.lenses-chatbox--detached .lenses-chat-message.assistant,
+.lenses-chatbox--selection .lenses-chat-message.assistant {
+  align-self: stretch;
+  max-width: 100%;
+  background: transparent;
+  padding: 0;
+  /* Inherits 14px / 1.5 / 400 from base .lenses-chat-message — matches
+     sidepanel `.message`. No size override here on purpose. */
+  color: var(--lenses-chat-text);
+}
+
+.lenses-chatbox--detached .lenses-chat-message.markdown p,
+.lenses-chatbox--selection .lenses-chat-message.markdown p {
+  margin: 0 0 6px;
+}
+
+.lenses-chatbox--detached .lenses-chat-message.user,
+.lenses-chatbox--selection .lenses-chat-message.user {
+  /* A bit narrower than the default 95% so short questions sit as a
+     compact pill, not a long banner. */
+  max-width: 80%;
+}
+
+.lenses-chatbox--detached .lenses-chat-message-frame.user,
+.lenses-chatbox--selection .lenses-chat-message-frame.user {
+  max-width: 80%;
+}
+
+.lenses-chatbox--detached .lenses-chat-message-frame.user .lenses-chat-message.user,
+.lenses-chatbox--selection .lenses-chat-message-frame.user .lenses-chat-message.user {
+  max-width: 100%;
+}
+
+/* Detached header icons mirror the compact source-callout controls. */
+.lenses-chatbox--detached .lenses-chatbox-close,
+.lenses-chatbox--detached .lenses-chatbox-delete,
+.lenses-chatbox--selection .lenses-chatbox-close,
+.lenses-chatbox--selection .lenses-chatbox-delete {
+  appearance: none;
+  border: 0;
+  margin-top: -2px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: var(--lenses-radius-xs);
+  color: var(--lenses-chat-muted);
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-close:hover,
+.lenses-chatbox--selection .lenses-chatbox-close:hover {
+  color: var(--lenses-chat-ink);
+}
+
+/* Header actions group: keeps Delete + Close vertically aligned with the
+   eyebrow row. Sits flush to the right of the header text. */
+.lenses-chatbox--detached .lenses-chatbox-header-actions,
+.lenses-chatbox--selection .lenses-chatbox-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-delete:hover,
+.lenses-chatbox--selection .lenses-chatbox-delete:hover {
+  color: #b91c1c;
+}
+
+.lenses-chatbox-action-icon {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+/* Down-weight the thinking toggle when collapsed — it should feel like a
+   subtle marginal note, not a half-full container. The bordered box only
+   appears once expanded. */
+.lenses-chatbox--detached .lenses-chat-thinking,
+.lenses-chatbox--selection .lenses-chat-thinking {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  min-height: 0;
+  margin: 2px 0 0;
+}
+
+.lenses-chatbox--detached .lenses-chat-thinking[open],
+.lenses-chatbox--selection .lenses-chat-thinking[open] {
+  background: var(--lenses-chat-paper-soft);
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-radius: var(--lenses-radius-md);
+  padding: 6px 10px;
+}
+
+.lenses-chatbox--detached .lenses-chat-thinking summary,
+.lenses-chatbox--selection .lenses-chat-thinking summary {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--lenses-chat-muted);
+  gap: 5px;
+}
+
+.lenses-chatbox--detached .lenses-chat-thinking summary:hover,
+.lenses-chatbox--selection .lenses-chat-thinking summary:hover {
+  color: var(--lenses-chat-text);
+}
+
+/* Slimmer chevron — the default 4/5px triangle reads as a chunky play button
+   at this size. A 3px triangle feels lighter and matches the smaller label. */
+.lenses-chatbox--detached .lenses-chat-thinking summary::before,
+.lenses-chatbox--selection .lenses-chat-thinking summary::before {
+  border-top-width: 3px;
+  border-bottom-width: 3px;
+  border-left-width: 4px;
+}
+
+.lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking[open],
+.lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking[open] {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking summary,
+.lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking summary {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  gap: 6px;
+}
+
+.lenses-chatbox--detached .lenses-chat-activity .lenses-chat-thinking summary::before,
+.lenses-chatbox--selection .lenses-chat-activity .lenses-chat-thinking summary::before {
+  display: none;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-action-row,
+.lenses-chatbox--selection .lenses-chatbox-action-row {
+  min-height: var(--lenses-chat-composer-send-size);
+}
+
+.lenses-chatbox--detached .lenses-chatbox-input,
+.lenses-chatbox--selection .lenses-chatbox-input {
+  min-height: 40px;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-input::placeholder,
+.lenses-chatbox--selection .lenses-chatbox-input::placeholder {
+  color: var(--lenses-chat-composer-placeholder);
+}
+
+.lenses-chatbox--detached .lenses-chatbox-input:hover:not(:disabled),
+.lenses-chatbox--selection .lenses-chatbox-input:hover:not(:disabled) {
+  background: transparent !important;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-input:focus,
+.lenses-chatbox--selection .lenses-chatbox-input:focus {
+  background: transparent !important;
+  box-shadow: none;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-send,
+.lenses-chatbox--selection .lenses-chatbox-send {
+  width: var(--lenses-chat-composer-send-size);
+  height: var(--lenses-chat-composer-send-size);
+  align-self: center;
+  padding: 0;
+  border-radius: var(--lenses-radius-round);
+  background: var(--lenses-chat-send-bg);
+  color: var(--lenses-chat-send-ink);
+  /* Inner highlight + slim bottom shadow give a subtle dimensional cue
+     without competing with the panel's own drop shadow. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(0, 0, 0, 0.04);
+  transition: background-color 0.12s ease;
+}
+
+.lenses-chatbox--detached .lenses-chatbox-send:hover:not(:disabled),
+.lenses-chatbox--selection .lenses-chatbox-send:hover:not(:disabled) {
+  background: var(--lenses-chat-send-bg-hover);
+}
+
+.lenses-chatbox--detached .lenses-chatbox-send:active:not(:disabled),
+.lenses-chatbox--selection .lenses-chatbox-send:active:not(:disabled) {
+  background: var(--lenses-chat-send-bg-hover);
+}
+
+.lenses-chatbox--detached .lenses-chat-message.assistant.streaming,
+.lenses-chatbox--detached .lenses-chat-message.assistant.plain,
+.lenses-chatbox--selection .lenses-chat-message.assistant.streaming,
+.lenses-chatbox--selection .lenses-chat-message.assistant.plain {
+  /* Streaming variant inherits the flat-prose treatment too. */
+  background: transparent;
+  padding: 2px 0 6px;
+}
+
+/* Prevent long unbreakable strings (URLs, IDs) in the assistant's markdown
+   from creating a horizontal scrollbar. Applied globally, not gated to
+   selection mode, since the annotation chat benefits too. */
+.lenses-chat-message.markdown {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lenses-chat-message.markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Aggregated inline citations (shared CitationGroup component). The pill sits
+ * inside the chat message and rides the chat tokens; the popover is portaled to
+ * the shadow theme scope — outside the chatbox's clipped panel — so it carries a
+ * self-contained palette (the --pop-* tokens, flipped for dark below). */
+.citation-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  vertical-align: middle;
+  max-width: 220px;
+  margin: 0 2px;
+  padding: 1px 7px 1px 5px;
+  border: 1px solid var(--lenses-chat-line-soft);
+  border-radius: 999px;
+  background: var(--lenses-chat-paper-soft);
+  color: var(--lenses-chat-text);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.citation-chip:hover,
+.citation-chip[aria-expanded="true"] {
+  border-color: var(--lenses-chat-accent);
+  background: var(--lenses-chat-accent-soft);
+  color: var(--lenses-chat-ink);
+}
+
+.citation-chip-favicon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  display: block;
+  border-radius: 3px;
+}
+
+.citation-chip-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.citation-chip-more {
+  flex-shrink: 0;
+  color: var(--lenses-chat-muted);
+  font-weight: 500;
+}
+
+.citation-pop {
+  --pop-paper: #ffffff;
+  --pop-ink: #0d0d0d;
+  --pop-muted: #737373;
+  --pop-line: #e6e6e6;
+  --pop-line-soft: #f2f2f2;
+  --pop-paper-soft: #f7f7f7;
+  --pop-accent: #2f6df6;
+  position: fixed;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  width: 288px;
+  max-width: calc(100vw - 16px);
+  padding: 10px 12px 12px;
+  border: 1px solid var(--pop-line);
+  border-radius: 12px;
+  background: var(--pop-paper);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  color: var(--pop-ink);
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.citation-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.citation-pop-nav {
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* Nav arrows: no frame — just a quiet fill that lifts slightly on hover/focus. */
+.citation-pop-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--pop-ink) 8%, transparent);
+  color: var(--pop-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.citation-pop-arrow:hover:not(:disabled),
+.citation-pop-arrow:focus-visible:not(:disabled) {
+  background: color-mix(in srgb, var(--pop-ink) 16%, transparent);
+  color: var(--pop-ink);
+  outline: none;
+}
+
+.citation-pop-arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.citation-pop-count {
+  color: var(--pop-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.citation-pop-body {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.citation-pop-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.citation-pop-favicon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+  border-radius: 3px;
+}
+
+.citation-pop-domain {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--pop-muted);
+  font-size: 12px;
+}
+
+.citation-pop-title {
+  display: block;
+  color: var(--pop-ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.citation-pop-body:hover .citation-pop-title {
+  color: var(--pop-accent);
+}
+
+/* The first part of the cited text, shown only when the source provides it. */
+.citation-pop-snippet {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 4px;
+  color: var(--pop-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
